@@ -55,13 +55,13 @@ class StackerComponent extends Component {
 }
 
 
-class ElevatorComponent extends Component {
+class StiltComponent extends Component {
 
     double power = 0;
 
     CRServo servo;
 
-    ElevatorComponent(OpMode op, CRServo servo) {
+    StiltComponent(OpMode op, CRServo servo) {
         opMode = op;
         this.servo = servo;
 
@@ -81,7 +81,7 @@ class ElevatorComponent extends Component {
     }
 
     void addData() {
-        opMode.telemetry.addData("Elevator Component",
+        opMode.telemetry.addData("Stilt Component",
                 "power: (%.2f)",
                 power);
     }
@@ -150,6 +150,7 @@ class SwerveDrive extends Component {
 
     double drivePower;
     double servoPower;
+    DcMotor.Direction motorDirection;
 
     SwerveDrive(OpMode op, DcMotor motor1, DcMotor motor2, CRServo servo) {
         opMode = op;
@@ -157,9 +158,23 @@ class SwerveDrive extends Component {
         this.motor2 = motor2;
         this.servo = servo;
 
-        this.motor1.setDirection(DcMotor.Direction.FORWARD);
-        this.motor2.setDirection(DcMotor.Direction.FORWARD);
+        setMotorDirection(DcMotor.Direction.FORWARD);
         this.servo.setDirection(CRServo.Direction.FORWARD);
+    }
+
+    private void setMotorDirection(DcMotor.Direction direction) {
+        motorDirection = direction;
+
+        this.motor1.setDirection(direction);
+        this.motor2.setDirection(direction);
+    }
+
+    private void reverseMotorDirection() {
+        if (motorDirection == DcMotor.Direction.FORWARD) {
+            setMotorDirection(DcMotor.Direction.REVERSE);
+        } else {
+            setMotorDirection(DcMotor.Direction.FORWARD);
+        }
     }
 
     /**
@@ -183,29 +198,49 @@ class SwerveDrive extends Component {
         return constrainRad(Math.atan2(y, x));
     }
 
+    /**
+     * The amount of rotation, in radians (-PI to PI), needed to reach a target angle from the current angle
+     */
+    private double calculateTurn(double current, double target) {
+        double diff_ccw = constrainRad(target - current);
+        double diff_cw = TWO_PI - diff_ccw;
+        double turn;
+        if (diff_ccw < diff_cw) {
+            turn = diff_ccw;
+        } else {
+            turn = -diff_cw;
+        }
+        return turn;
+    }
+
     void update() {
         double x = opMode.gamepad1.right_stick_x;
-        double y = -opMode.gamepad1.right_stick_y;
+        double y = opMode.gamepad1.right_stick_y;
 
         // MOTORS
 
         double magnitude = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
-        drivePower = Range.clip(magnitude, -1.0, 1.0);
+        drivePower = Range.clip(magnitude, -1.0, 1.0);  // Clip not necessary
 
         // SERVO
 
-        double targetRotation = targetRotation(y, x);
-        double currentRotation = currentRotation();
-
-        double diff_ccw = constrainRad(targetRotation - currentRotation);
-        double diff_cw = TWO_PI - diff_ccw;
-        double distanceToTarget;
-        if (diff_ccw < diff_cw) {
-            distanceToTarget = diff_ccw;
+        if (magnitude == 0) {
+            servoPower = 0;
         } else {
-            distanceToTarget = -diff_cw;
+            double targetRotation = targetRotation(y, x);
+            double currentRotation = currentRotation();
+            double aboutFaceRotation = constrainRad(currentRotation + Math.PI);
+
+            double turnCurrent = calculateTurn(currentRotation, targetRotation);
+            double turnAboutFace = calculateTurn(aboutFaceRotation, targetRotation);
+
+            if (Math.abs(turnAboutFace) < Math.abs(turnCurrent)) {
+                reverseMotorDirection();
+                servoPower = -Range.clip(turnAboutFace, -1, 1);
+            } else {
+                servoPower = -Range.clip(turnCurrent, -1, 1);
+            }
         }
-        servoPower = Range.clip(distanceToTarget, -1, 1);
     }
 
     void go() {
@@ -232,9 +267,6 @@ public class SecondOpMode extends OpMode
     private ElapsedTime runtime = new ElapsedTime();
 
 
-    // Motor
-    private DcMotor testMotor;
-
     // Swerve Drives
     private SwerveDrive leftSwerveDrive;
     private SwerveDrive rightSwerveDrive;
@@ -245,19 +277,14 @@ public class SecondOpMode extends OpMode
     // Intake
     private IntakeComponent intakeComponent;
 
-    // Elevators
-    private ElevatorComponent leftElevator;
-    private ElevatorComponent rightElevator;
+    // Stilts
+    private StiltComponent leftStilt;
+    private StiltComponent rightStilt;
 
     @Override
     public void init() {
 
-        // Test Motor
-
-//        testMotor = hardwareMap.dcMotor.get("test_motor");
-//        testMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        // Initialize Stacker Motor (1)
+        // Initialize Stacker Motor
 
         DcMotor stacker = hardwareMap.dcMotor.get("stacker");
         stackerComponent = new StackerComponent(this, stacker);
@@ -269,25 +296,25 @@ public class SecondOpMode extends OpMode
         DcMotor intake_lift = hardwareMap.dcMotor.get("intake_lift");
         intakeComponent = new IntakeComponent(this, intake_left, intake_right, intake_lift);
 
-        // Two Elevator Servos
+        // Two Stilt Servos
 
-//        CRServo left_elevator = hardwareMap.crservo.get("left_elevator");
-//        leftElevator = new ElevatorComponent(this, left_elevator);
+//        CRServo left_stilt = hardwareMap.crservo.get("left_stilt");
+//        leftStilt = new StiltComponent(this, left_stilt);
 //
-//        CRServo right_elevator = hardwareMap.crservo.get("right_elevator");
-//        rightElevator = new ElevatorComponent(this, right_elevator);
+//        CRServo right_stilt = hardwareMap.crservo.get("right_stilt");
+//        rightStilt = new StiltComponent(this, right_stilt);
 
         // Initialize Two Swerve Drives
 
-//        DcMotor left_sd1 = hardwareMap.dcMotor.get("left_sd1");
-//        DcMotor left_sd2 = hardwareMap.dcMotor.get("left_sd2");
-//        CRServo left_sd3 = hardwareMap.crservo.get("left_sd3");
-//        leftSwerveDrive = new SwerveDrive(this, left_sd1, left_sd2, left_sd3);
-//
-//        DcMotor right_sd1 = hardwareMap.dcMotor.get("right_sd1");
-//        DcMotor right_sd2 = hardwareMap.dcMotor.get("right_sd2");
-//        CRServo right_sd3 = hardwareMap.crservo.get("right_sd3");
-//        rightSwerveDrive = new SwerveDrive(this, right_sd1, right_sd2, right_sd3);
+        DcMotor left_sd1 = hardwareMap.dcMotor.get("left_sd1");
+        DcMotor left_sd2 = hardwareMap.dcMotor.get("left_sd2");
+        CRServo left_sd3 = hardwareMap.crservo.get("left_sd3");
+        leftSwerveDrive = new SwerveDrive(this, left_sd1, left_sd2, left_sd3);
+
+        DcMotor right_sd1 = hardwareMap.dcMotor.get("right_sd1");
+        DcMotor right_sd2 = hardwareMap.dcMotor.get("right_sd2");
+        CRServo right_sd3 = hardwareMap.crservo.get("right_sd3");
+        rightSwerveDrive = new SwerveDrive(this, right_sd1, right_sd2, right_sd3);
 
         // Update Telemetry
 
@@ -315,17 +342,6 @@ public class SecondOpMode extends OpMode
     @Override
     public void loop() {
 
-        // Test Motor
-
-//        double testPower = 0;
-//        if (gamepad1.a)
-//            testPower += 1;
-//        if (gamepad1.b)
-//            testPower -= -1;
-//        testMotor.setPower(testPower);
-//        telemetry.addData("Test Motor", "power (%.2f)", testPower);
-
-
         // Stacker Component
 
         if (stackerComponent != null) {
@@ -342,20 +358,20 @@ public class SecondOpMode extends OpMode
             intakeComponent.addData();
         }
 
-        // Left Elevator Component
+        // Left Stilt Component
 
-        if (leftElevator != null) {
-            leftElevator.update();
-            leftElevator.go();
-            leftElevator.addData();
+        if (leftStilt != null) {
+            leftStilt.update();
+            leftStilt.go();
+            leftStilt.addData();
         }
 
-        // Right Elevator Component
+        // Right Stilt Component
 
-        if (rightElevator != null) {
-            rightElevator.update();
-            rightElevator.go();
-            rightElevator.addData();
+        if (rightStilt != null) {
+            rightStilt.update();
+            rightStilt.go();
+            rightStilt.addData();
         }
 
         // Left Swerve Drive
