@@ -55,35 +55,103 @@ class StackerComponent extends Component {
 }
 
 
+class Vector {
+    double left;
+    double right;
+    Vector(double left, double right) {
+        this.left = left;
+        this.right = right;
+    }
+}
+
+
 class StiltComponent extends Component {
 
-    double power = 0;
+    // Left, right
+    Vector[] MODES = {
+            new Vector(0, 0),
+            new Vector(0, -600),
+            new Vector(15000, 2700),
+            new Vector(15000, 950),
+            new Vector(7000, 950),
+            new Vector(14500, 950)
+    };
 
-    CRServo servo;
 
-    StiltComponent(OpMode op, CRServo servo) {
+    int currentModeIdx = 0;
+    boolean atMode = true;
+
+    double leftPower = 0;
+    double rightPower = 0;
+
+    CRServo left_servo;
+    DcMotor left_encoder;
+    CRServo right_servo;
+    DcMotor right_encoder;
+
+    StiltComponent(OpMode op, CRServo left_servo, DcMotor left_encoder, CRServo right_servo, DcMotor right_encoder) {
         opMode = op;
-        this.servo = servo;
+        this.left_servo = left_servo;
+        this.left_encoder = left_encoder;
+        this.right_servo = right_servo;
+        this.right_encoder = right_encoder;
 
-        this.servo.setDirection(DcMotor.Direction.FORWARD);
+        this.left_servo.setDirection(DcMotor.Direction.FORWARD);
+        this.right_servo.setDirection(DcMotor.Direction.FORWARD);
+    }
+
+    private double getEncoderHeight(DcMotor encoder) {
+        return encoder.getCurrentPosition();
+    }
+    private Vector currentHeightVector() {
+        return new Vector(getEncoderHeight(this.left_encoder), getEncoderHeight(this.right_encoder));
+    }
+
+    private void adjustPower() {
+        double tolerance = 64;
+
+        Vector current_vector = currentHeightVector();
+        Vector target_vector = MODES[currentModeIdx];
+
+        double current_left = current_vector.left;
+        double target_left = target_vector.left;
+        double current_right = current_vector.right;
+        double target_right = target_vector.right;
+
+        double left_diff = target_left-current_left;
+        double right_diff = target_right-current_right;
+        if (Math.abs(left_diff) < tolerance && Math.abs(right_diff) < tolerance) {
+            atMode = true;
+            leftPower = 0;
+            rightPower = 0;
+        } else {
+            atMode = false;
+            leftPower = Range.clip(left_diff, -1, 1);
+            rightPower = Range.clip(right_diff, -1, 1);
+        }
     }
 
     void update() {
-        power = 0;
-        if (opMode.gamepad1.dpad_up)
-            power += 1;
-        if (opMode.gamepad1.dpad_down)
-            power -= 1;
+        adjustPower();
+        if (atMode) {
+            if (opMode.gamepad1.dpad_up && currentModeIdx < MODES.length-1)
+                currentModeIdx += 1;
+            if (opMode.gamepad1.dpad_down && currentModeIdx > 0)
+                currentModeIdx -= 1;
+        }
+
     }
 
     void go() {
-        servo.setPower(power);
+        left_servo.setPower(leftPower);
+        right_servo.setPower(rightPower);
     }
 
     void addData() {
+        Vector height_vector = currentHeightVector();
         opMode.telemetry.addData("Stilt Component",
-                "power: (%.2f)",
-                power);
+                "left power: (%.2f), left height: (%.2f), right power (%.2f), right height: (%.2f)",
+                leftPower, height_vector.left, rightPower, height_vector.right);
     }
 
 }
@@ -141,6 +209,8 @@ class IntakeComponent extends Component {
 class SwerveDrive extends Component {
 
     private final double TWO_PI = 2*Math.PI;
+    private final int FORWARD = 0;
+    private final int REVERSE = 1;
 
 
     DcMotor motor1;  // Motor with encoder
@@ -150,7 +220,7 @@ class SwerveDrive extends Component {
 
     double drivePower;
     double servoPower;
-    DcMotor.Direction motorDirection;
+    int motorDirection = FORWARD;
 
     SwerveDrive(OpMode op, DcMotor motor1, DcMotor motor2, CRServo servo) {
         opMode = op;
@@ -158,22 +228,20 @@ class SwerveDrive extends Component {
         this.motor2 = motor2;
         this.servo = servo;
 
-        setMotorDirection(DcMotor.Direction.FORWARD);
         this.servo.setDirection(CRServo.Direction.FORWARD);
+        this.motor1.setDirection(DcMotor.Direction.FORWARD);
+        this.motor2.setDirection(DcMotor.Direction.FORWARD);
     }
 
-    private void setMotorDirection(DcMotor.Direction direction) {
+    private void setMotorDirection(int direction) {
         motorDirection = direction;
-
-        this.motor1.setDirection(direction);
-        this.motor2.setDirection(direction);
     }
 
     private void reverseMotorDirection() {
-        if (motorDirection == DcMotor.Direction.FORWARD) {
-            setMotorDirection(DcMotor.Direction.REVERSE);
+        if (motorDirection == FORWARD) {
+            setMotorDirection(REVERSE);
         } else {
-            setMotorDirection(DcMotor.Direction.FORWARD);
+            setMotorDirection(FORWARD);
         }
     }
 
@@ -188,7 +256,12 @@ class SwerveDrive extends Component {
      * Calculate rotation of the swerve drive servo, in radians (0 - TWO_PI)
      */
     private double currentRotation() {
-        return constrainRad(TWO_PI * this.motor1.getCurrentPosition()/8192.);
+        double rot = constrainRad(TWO_PI * this.motor1.getCurrentPosition()/8192.);
+        if (motorDirection == FORWARD) {
+            return rot;
+        } else {
+            return constrainRad(rot+Math.PI);
+        }
     }
 
     /**
@@ -214,6 +287,11 @@ class SwerveDrive extends Component {
     }
 
     void update() {
+
+//        if (opMode.gamepad1.right_stick_button) {
+//            // add offset to make current rotation the forward position
+//        }
+
         double x = opMode.gamepad1.right_stick_x;
         double y = opMode.gamepad1.right_stick_y;
 
@@ -241,6 +319,9 @@ class SwerveDrive extends Component {
                 servoPower = -Range.clip(turnCurrent, -1, 1);
             }
         }
+
+        if (motorDirection == REVERSE)
+            drivePower *= -1;
     }
 
     void go() {
@@ -250,9 +331,13 @@ class SwerveDrive extends Component {
     }
 
     void addData() {
+        String drc = "null";
+        if (motorDirection == FORWARD) drc = "forward";
+        else if (motorDirection == REVERSE) drc = "reverse";
+
         opMode.telemetry.addData("Swerve Drive",
-                "currentRotation: (%f), servoPower: (%.2f), drivePower: (%.2f)",
-                currentRotation(), servoPower, drivePower);
+                "currentRotation: (%f), direction: (%s), servoPower: (%.2f), drivePower: (%.2f)",
+                currentRotation(), drc, servoPower, drivePower);
     }
 }
 
@@ -278,8 +363,7 @@ public class SecondOpMode extends OpMode
     private IntakeComponent intakeComponent;
 
     // Stilts
-    private StiltComponent leftStilt;
-    private StiltComponent rightStilt;
+    private StiltComponent stiltComponent;
 
     @Override
     public void init() {
@@ -298,11 +382,9 @@ public class SecondOpMode extends OpMode
 
         // Two Stilt Servos
 
-//        CRServo left_stilt = hardwareMap.crservo.get("left_stilt");
-//        leftStilt = new StiltComponent(this, left_stilt);
-//
-//        CRServo right_stilt = hardwareMap.crservo.get("right_stilt");
-//        rightStilt = new StiltComponent(this, right_stilt);
+        CRServo left_stilt = hardwareMap.crservo.get("left_stilt");
+        CRServo right_stilt = hardwareMap.crservo.get("right_stilt");
+        stiltComponent = new StiltComponent(this, left_stilt, intake_left, right_stilt, intake_right);
 
         // Initialize Two Swerve Drives
 
@@ -358,20 +440,12 @@ public class SecondOpMode extends OpMode
             intakeComponent.addData();
         }
 
-        // Left Stilt Component
+        // Stilt Component
 
-        if (leftStilt != null) {
-            leftStilt.update();
-            leftStilt.go();
-            leftStilt.addData();
-        }
-
-        // Right Stilt Component
-
-        if (rightStilt != null) {
-            rightStilt.update();
-            rightStilt.go();
-            rightStilt.addData();
+        if (stiltComponent != null) {
+            stiltComponent.update();
+            stiltComponent.go();
+            stiltComponent.addData();
         }
 
         // Left Swerve Drive
