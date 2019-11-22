@@ -71,10 +71,10 @@ class StiltComponent extends Component {
     Vector[] MODES = {
             new Vector(0, 0),
             new Vector(0, -600),
-            new Vector(15000, 2700),
-            new Vector(15000, 950),
-            new Vector(7000, 950),
-            new Vector(14500, 950)
+            new Vector(-13000, 2700),
+            new Vector(-13000, 950),
+            new Vector(-7000, 950),
+            new Vector(-12000, 950)
     };
 
 
@@ -108,7 +108,7 @@ class StiltComponent extends Component {
     }
 
     private void adjustPower() {
-        double tolerance = 64;
+        double tolerance = 50;
 
         Vector current_vector = currentHeightVector();
         Vector target_vector = MODES[currentModeIdx];
@@ -120,21 +120,23 @@ class StiltComponent extends Component {
 
         double left_diff = target_left-current_left;
         double right_diff = target_right-current_right;
-        if (Math.abs(left_diff) < tolerance && Math.abs(right_diff) < tolerance) {
-            atMode = true;
+        if (Math.abs(left_diff) < tolerance) {
             leftPower = 0;
+        } else {
+            leftPower = Range.clip(left_diff/500, -1, 1);
+        }
+        if (Math.abs(right_diff) < tolerance) {
             rightPower = 0;
         } else {
-            atMode = false;
-            leftPower = Range.clip(left_diff, -1, 1);
-            rightPower = Range.clip(right_diff, -1, 1);
+            rightPower = Range.clip(right_diff/500, -1, 1);
         }
+        atMode = (rightPower == 0 && leftPower == 0);
     }
 
     void update() {
         adjustPower();
         if (atMode) {
-            if (opMode.gamepad1.dpad_up && currentModeIdx < MODES.length-1)
+            if (opMode.gamepad1.dpad_up && currentModeIdx < MODES.length - 1)
                 currentModeIdx += 1;
             if (opMode.gamepad1.dpad_down && currentModeIdx > 0)
                 currentModeIdx -= 1;
@@ -150,8 +152,8 @@ class StiltComponent extends Component {
     void addData() {
         Vector height_vector = currentHeightVector();
         opMode.telemetry.addData("Stilt Component",
-                "left power: (%.2f), left height: (%.2f), right power (%.2f), right height: (%.2f)",
-                leftPower, height_vector.left, rightPower, height_vector.right);
+                "left power: (%.2f), left height: (%.2f), right power: (%.2f), right height: (%.2f), mode: %s, atMode: %s",
+                leftPower, height_vector.left, rightPower, height_vector.right, currentModeIdx, atMode);
     }
 
 }
