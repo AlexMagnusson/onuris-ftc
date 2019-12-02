@@ -6,9 +6,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class StackerComponent extends Component {
 
-    double power = 0;
-
+    // Hardware devices
     DcMotor motor;
+
+    // Instance variables
+    double power = 0;
 
     public StackerComponent(DcMotor motor) {
         this.motor = motor;

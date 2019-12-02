@@ -10,21 +10,21 @@ import org.firstinspires.ftc.teamcode.components.StiltComponent;
 @TeleOp(name="Julian's Second Op Mode", group="Iterative Opmode")
 public class SecondOpMode extends AbstractOpMode
 {
-    final int FRONT_MODE = 0;   // intake mode
-    final int BACK_MODE = 1;  // stilt/stacking mode
+    final int INTAKE_MODE = 0;   // intake mode (front)
+    final int STACK_MODE = 1;  // stilt/stacking mode (back)
 
-    int operationMode = FRONT_MODE;
+    int operationMode = INTAKE_MODE;
 
     @Override
     public void loop() {
 
         if (gamepad1.left_bumper) {
-            operationMode = FRONT_MODE;
+            operationMode = INTAKE_MODE;
 
             stiltComponent.setTargetMode(StiltComponent.INTAKE_MODE);
         }
         if (gamepad1.right_bumper) {
-            operationMode = BACK_MODE;
+            operationMode = STACK_MODE;
 
             stiltComponent.setTargetMode(StiltComponent.STACK_MODE);
         }
@@ -32,7 +32,7 @@ public class SecondOpMode extends AbstractOpMode
 
         boolean stackerUp;
         boolean stackerDown;
-        if (operationMode == BACK_MODE) {
+        if (operationMode == STACK_MODE) {
             stackerUp = gamepad1.dpad_up;
             stackerDown = gamepad1.dpad_down;
         } else {
@@ -47,7 +47,7 @@ public class SecondOpMode extends AbstractOpMode
         boolean intakeMid;
         boolean intakeHigh;
         double intakeTweak;
-        if (operationMode == FRONT_MODE) {
+        if (operationMode == INTAKE_MODE) {
             intakeLow = gamepad1.a;
             intakeMid = gamepad1.b;
             intakeHigh = gamepad1.y;
@@ -67,7 +67,7 @@ public class SecondOpMode extends AbstractOpMode
         boolean stiltMode0;
         boolean stiltMode1;
         boolean stiltMode2;
-        if (operationMode == BACK_MODE) {
+        if (operationMode == STACK_MODE) {
             stiltMode = gamepad1.x;
             stiltMode0 = gamepad1.a;
             stiltMode1 = gamepad1.b;

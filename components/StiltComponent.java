@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class StiltComponent extends Component {
 
-    // MODES
-
+    // Static variables
+    // Modes
     public static final Vector ZERO_MODE = new Vector(0, 0);
     public static final Vector INTAKE_MODE = new Vector(0, -600);
     public static final Vector STACK_MODE = new Vector(-13000,  2700);
@@ -18,19 +18,19 @@ public class StiltComponent extends Component {
     public static final Vector STACK1_MODE = new Vector(-7000,  950);
     public static final Vector STACK2_MODE = new Vector(-12000,  950);
 
+    // Hardware devices
+    CRServo foot_servo;
+    DcMotor foot_encoder;
+    CRServo wheel_servo;
+    DcMotor wheel_encoder;
 
-    // Private instance variables
+    // Instance variables
 
     Vector targetMode = ZERO_MODE;
     public boolean atTarget = true;
 
     double footPower = 0;
     double wheelPower = 0;
-
-    CRServo foot_servo;
-    DcMotor foot_encoder;
-    CRServo wheel_servo;
-    DcMotor wheel_encoder;
 
     public StiltComponent(CRServo foot_servo, DcMotor foot_encoder, CRServo wheel_servo, DcMotor wheel_encoder) {
         this.foot_servo = foot_servo;

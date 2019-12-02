@@ -8,16 +8,20 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class SwerveDrive extends Component {
 
-    private final double TWO_PI = 2*Math.PI;
-    private final int FORWARD = 0;
-    private final int REVERSE = 1;
+    // Static variables
 
+    private static final double TWO_PI = 2*Math.PI;
+    private static final int FORWARD = 0;
+    private static final int REVERSE = 1;
 
+    // Hardware devices
     DcMotor motor1;  // Motor with encoder
     DcMotor motor2;
     CRServo servo;
     DcMotor servo_encoder;
     DcMotor motor_encoder;
+
+    // Instance variables
 
     double drivePower;
     double servoPower;

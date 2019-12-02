@@ -8,20 +8,25 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class IntakeComponent extends Component {
 
+    // Static variables
+    // Positions
     public static final double LOW_POSITION = 0;
     public static final double MID_POSITION = 200;
     public static final double HIGH_POSITION = 400;
+
+    // Hardware devices
+    DcMotor motor1;  // Left intake motor
+    DcMotor motor2;  // Right intake motor
+    DcMotor motor3;  // Vertical movement motor
+    DcMotor encoder;
+
+    // Instance variables
 
     double targetPosition = LOW_POSITION;
     public boolean atTarget = false;
 
     double intakePower = 0;
     double verticalPower = 0;
-
-    DcMotor motor1;  // Left intake motor
-    DcMotor motor2;  // Right intake motor
-    DcMotor motor3;  // Vertical movement motor
-    DcMotor encoder;
 
     public IntakeComponent(DcMotor motor1, DcMotor motor2, DcMotor motor3, DcMotor encoder_motor) {
         this.motor1 = motor1;
