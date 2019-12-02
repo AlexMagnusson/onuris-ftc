@@ -1,14 +1,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.components.IntakeComponent;
+import org.firstinspires.ftc.teamcode.components.StiltComponent;
 
 
 @TeleOp(name="Julian's Second Op Mode", group="Iterative Opmode")
@@ -25,12 +21,12 @@ public class SecondOpMode extends AbstractOpMode
         if (gamepad1.left_bumper) {
             operationMode = FRONT_MODE;
 
-            stiltComponent.setCurrentMode(stiltComponent.INTAKE_MODE);
+            stiltComponent.setTargetMode(StiltComponent.INTAKE_MODE);
         }
         if (gamepad1.right_bumper) {
             operationMode = BACK_MODE;
 
-            stiltComponent.setCurrentMode(stiltComponent.STACK_MODE);
+            stiltComponent.setTargetMode(StiltComponent.STACK_MODE);
         }
 
 
@@ -90,7 +86,11 @@ public class SecondOpMode extends AbstractOpMode
         // Stacker Component
 
         if (stackerComponent != null) {
-            stackerComponent.update(stackerUp, stackerDown);
+            if (stackerUp)
+                stackerComponent.setUp();
+            if (stackerDown)
+                stackerComponent.setDown();
+            stackerComponent.update();
             stackerComponent.go();
             stackerComponent.addData(telemetry);
         }
@@ -98,7 +98,23 @@ public class SecondOpMode extends AbstractOpMode
         // Intake Component
 
         if (intakeComponent != null) {
-            intakeComponent.update(intakeIn, intakeOut, intakeLow, intakeMid, intakeHigh, intakeTweak);
+
+            intakeComponent.setIntakeOff();
+            if (intakeIn)
+                intakeComponent.setIntakeIn();
+            else if (intakeOut)
+                intakeComponent.setIntakeOut();
+
+            if (intakeLow)
+                intakeComponent.setTargetPosition(IntakeComponent.LOW_POSITION);
+            if (intakeMid)
+                intakeComponent.setTargetPosition(IntakeComponent.MID_POSITION);
+            if (intakeHigh)
+                intakeComponent.setTargetPosition(IntakeComponent.HIGH_POSITION);
+
+            intakeComponent.tweakPosition(intakeTweak);
+
+            intakeComponent.update();
             intakeComponent.go();
             intakeComponent.addData(telemetry);
         }
@@ -106,7 +122,15 @@ public class SecondOpMode extends AbstractOpMode
         // Stilt Component
 
         if (stiltComponent != null) {
-            stiltComponent.update(stiltMode, stiltMode0, stiltMode1, stiltMode2);
+            if (stiltMode)
+                stiltComponent.setTargetMode(StiltComponent.STACK_MODE);
+            if (stiltMode0)
+                stiltComponent.setTargetMode(StiltComponent.STACK0_MODE);
+            if (stiltMode1)
+                stiltComponent.setTargetMode(StiltComponent.STACK1_MODE);
+            if (stiltMode2)
+                stiltComponent.setTargetMode(StiltComponent.STACK2_MODE);
+            stiltComponent.update();
             stiltComponent.go();
             stiltComponent.addData(telemetry);
         }

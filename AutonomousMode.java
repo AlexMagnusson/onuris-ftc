@@ -2,12 +2,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.teamcode.components.Vector;
 
 
 @Autonomous(name="Julian's Auto Mode")
@@ -28,7 +24,7 @@ public class AutonomousMode extends AbstractOpMode
     double rotate;
     Vector stiltMode;
 
-    private void update() {
+    private void updateSwerves() {
         leftSwerveDrive.update(driveX, driveY, rotate);
         leftSwerveDrive.go();
         leftSwerveDrive.addData(telemetry);
@@ -36,17 +32,24 @@ public class AutonomousMode extends AbstractOpMode
         rightSwerveDrive.update(driveX, driveY, rotate);
         rightSwerveDrive.go();
         rightSwerveDrive.addData(telemetry);
+    }
 
-        stiltComponent.setCurrentMode(stiltMode);
-        stiltComponent.adjustPower();
+    private void updateStilts() {
+        stiltComponent.setTargetMode(stiltMode);
+        stiltComponent.update();
         stiltComponent.go();
         stiltComponent.addData(telemetry);
     }
 
+    private void update() {
+        updateSwerves();
+        updateStilts();
+    }
+
     @Override
     public void loop() {
-        currentRightPos = rightSwerveDrive.motor2.getCurrentPosition();
-        currentLeftPos = leftSwerveDrive.motor2.getCurrentPosition();
+        currentRightPos = rightSwerveDrive.getMotorPosition();
+        currentLeftPos = leftSwerveDrive.getMotorPosition();
 
         telemetry.addData("STAGE", "Stage %s, rightPosition: (%f), leftPosition: (%f)", currentStage, currentRightPos, currentLeftPos);
 
@@ -56,22 +59,24 @@ public class AutonomousMode extends AbstractOpMode
         stiltMode = stiltComponent.ZERO_MODE;
 
         Vector clampMode = new Vector(-1600, 1600);
+        Vector upMode = new Vector(-3000, 3000);
 
         if (waiting > 0) {
             waiting -= 1;
+            updateSwerves();
         } else {
-            if (currentStage == 1) {
+            if (currentStage == 1) {  // Move backward towards foundation
                 driveX = 0;
                 driveY = .8;
                 rotate = 0;
-                stiltMode = new Vector(-3000, 3000);
+                stiltMode = upMode;
 
                 update();
 
                 if (currentOffsetRight() >= 1500) {
                     nextStage();
                 }
-            } else if (currentStage == 2) {
+            } else if (currentStage == 2) {  // Drop the stilts, clamp
                 driveX = 0;
                 driveY = 0;
                 rotate = 0;
@@ -79,10 +84,10 @@ public class AutonomousMode extends AbstractOpMode
 
                 update();
 
-                if (stiltComponent.atMode) {
+                if (stiltComponent.atTarget) {
                     nextStage();
                 }
-            } else if (currentStage == 3) {
+            } else if (currentStage == 3) {  // Move forward, dragging foundation
                 driveX = 0;
                 driveY = -1;
                 rotate = 0;
@@ -90,40 +95,29 @@ public class AutonomousMode extends AbstractOpMode
 
                 update();
 
-                if (currentOffsetLeft() >= 1000) {
+                if (currentOffsetRight() >= 1500) {
                     nextStage();
                 }
-            } else if (currentStage == 4) {
-                driveX = 0;
-                driveY = .8;
-                rotate = 0;
-                stiltMode = clampMode;
-
-                update();
-
-                if (currentOffsetLeft() >= 1000) {
-                    nextStage();
-                }
-            } else if (currentStage == 5) {
+            } else if (currentStage == 4) {  // Move stilts up, un-clamp
                 driveX = 0;
                 driveY = 0;
                 rotate = 0;
-                stiltMode = new Vector(-3000, 3000);
+                stiltMode = upMode;
 
                 update();
 
-                if (stiltComponent.atMode) {
+                if (stiltComponent.atTarget) {
                     nextStage();
                 }
-            } else if (currentStage == 6) {
-                driveX = 0;
-                driveY = -0.8;
+            } else if (currentStage == 5) {  // Move rightward
+                driveX = -.8;
+                driveY = 0;
                 rotate = 0;
-                stiltMode = stiltComponent.INTAKE_MODE;
+                stiltMode = upMode;
 
                 update();
 
-                if (currentOffsetLeft() >= 2500) {
+                if (currentOffsetRight() >= 1500) {
                     nextStage();
                 }
             } else {
@@ -132,11 +126,11 @@ public class AutonomousMode extends AbstractOpMode
         }
     }
 
-    private double currentOffsetRight() {
+    private double currentOffsetLeft() {
         return Math.abs(currentLeftPos-initialLeftPos);
     }
 
-    private double currentOffsetLeft() {
+    private double currentOffsetRight() {
         return Math.abs(currentRightPos-initialRightPos);
     }
 

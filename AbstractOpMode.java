@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.teamcode.components.*;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 abstract public class AbstractOpMode extends OpMode {
 
-    ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
 
 
     // Swerve Drives
@@ -29,39 +31,39 @@ abstract public class AbstractOpMode extends OpMode {
 
         // Initialize Stacker Motor
 
-        DcMotor stacker = hardwareMap.dcMotor.get(Config.STACKER);
-        stackerComponent = new StackerComponent(stacker);
+        stackerComponent = new StackerComponent(dcMotor(Config.STACKER));
 
         // Three Intake Motors
 
-        DcMotor intake_left = hardwareMap.dcMotor.get(Config.INTAKE_LEFT);
-        DcMotor intake_right = hardwareMap.dcMotor.get(Config.INTAKE_RIGHT);
-        DcMotor intake_lift = hardwareMap.dcMotor.get(Config.INTAKE_LIFT);
-        intakeComponent = new IntakeComponent(intake_left, intake_right, intake_lift, intake_lift);
+        intakeComponent = new IntakeComponent(
+                dcMotor(Config.INTAKE_LEFT), dcMotor(Config.INTAKE_RIGHT),
+                dcMotor(Config.INTAKE_LIFT), dcMotor(Config.INTAKE_LIFT_ENCODER));
 
         // Two Stilt Servos
 
-        CRServo left_stilt = hardwareMap.crservo.get(Config.LEFT_STILT);
-        DcMotor left_encoder = hardwareMap.dcMotor.get(Config.LEFT_STILT_ENCODER);
-        CRServo right_stilt = hardwareMap.crservo.get(Config.RIGHT_STILT);
-        DcMotor right_encoder = hardwareMap.dcMotor.get(Config.RIGHT_STILT_ENCODER);
-        stiltComponent = new StiltComponent(left_stilt, left_encoder, right_stilt, right_encoder);
+        stiltComponent = new StiltComponent(
+                crServo(Config.LEFT_STILT), dcMotor(Config.LEFT_STILT_ENCODER),
+                crServo(Config.RIGHT_STILT), dcMotor(Config.RIGHT_STILT_ENCODER));
 
         // Initialize Two Swerve Drives
 
-        DcMotor left_sd1 = hardwareMap.dcMotor.get(Config.LEFT_SD1);
-        DcMotor left_sd2 = hardwareMap.dcMotor.get(Config.LEFT_SD2);
-        CRServo left_sd3 = hardwareMap.crservo.get(Config.LEFT_SD3);
-        DcMotor right_sd1 = hardwareMap.dcMotor.get(Config.RIGHT_SD1);
-        DcMotor right_sd2 = hardwareMap.dcMotor.get(Config.RIGHT_SD2);
-        CRServo right_sd3 = hardwareMap.crservo.get(Config.RIGHT_SD3);
-
-        leftSwerveDrive = new SwerveDrive(left_sd1, left_sd2, left_sd3, right_sd1);
-        rightSwerveDrive = new SwerveDrive(right_sd1, right_sd2, right_sd3, left_sd1);
+        leftSwerveDrive = new SwerveDrive(
+                dcMotor(Config.LEFT_SD1), dcMotor(Config.LEFT_SD2), crServo(Config.LEFT_SD3),
+                dcMotor(Config.LEFT_SD_SERVO_ENCODER), dcMotor(Config.LEFT_SD_MOTOR_ENCODER));
+        rightSwerveDrive = new SwerveDrive(
+                dcMotor(Config.RIGHT_SD1), dcMotor(Config.RIGHT_SD2), crServo(Config.RIGHT_SD3),
+                dcMotor(Config.RIGHT_SD_SERVO_ENCODER), dcMotor(Config.RIGHT_SD_MOTOR_ENCODER));
 
         // Update Telemetry
 
         telemetry.addData("Status", "Initialized");
+    }
+
+    private DcMotor dcMotor(String deviceName) {
+        return hardwareMap.dcMotor.get(deviceName);
+    }
+    private CRServo crServo(String deviceName) {
+        return hardwareMap.crservo.get(deviceName);
     }
 
     /*
