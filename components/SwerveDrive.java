@@ -12,9 +12,7 @@ public class SwerveDrive extends Component {
         this.left = left;
     }
 
-    public void drive(double driveX, double driveY, double rotateX) {
-        driveY *= -1;
-
+    private void doDrive(double driveX, double driveY, double rotateX) {
         // -1 (left) <= driveX <= 1 (right)
         // -1 (backward) <= driveY <= 1 (forward)
         // -1 (turn left) <= rotateX <= 1 (turn right)
@@ -30,6 +28,21 @@ public class SwerveDrive extends Component {
 
         right.drive(right_speed, right_angle);
         left.drive(left_speed, left_angle);
+    }
+
+    public void drive(double driveX, double driveY, double rotateX) {
+        driveY *= -1;
+        doDrive(driveX, driveY, rotateX);
+    }
+
+    public void drive(double driveX, double driveY, double rotateX, double heading) {
+        driveY *= -1;
+
+        double temp = driveY*Math.cos(heading) + driveX*Math.sin(heading);
+        driveX = -driveY*Math.sin(heading) + driveX*Math.cos(heading);
+        driveY = temp;
+
+        doDrive(driveX, driveY, rotateX);
     }
 
     public void addData(Telemetry telemetry) {

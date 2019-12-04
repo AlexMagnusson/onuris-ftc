@@ -26,7 +26,7 @@ public class AutonomousMode extends AbstractOpMode
     Vector stiltMode;
 
     private void updateSwerves() {
-        swerveDrive.drive(driveX, driveY, rotate);
+        swerveDrive.drive(driveX, driveY, rotate, heading);
         swerveDrive.addData(telemetry);
     }
 
@@ -44,6 +44,8 @@ public class AutonomousMode extends AbstractOpMode
 
     @Override
     public void loop() {
+        super.loop();
+
         currentRightPos = swerveDrive.right.getMotorPosition();
         currentLeftPos = swerveDrive.left.getMotorPosition();
 

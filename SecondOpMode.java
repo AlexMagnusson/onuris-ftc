@@ -17,6 +17,7 @@ public class SecondOpMode extends AbstractOpMode
 
     @Override
     public void loop() {
+        super.loop();
 
         if (gamepad1.left_bumper) {
             operationMode = INTAKE_MODE;
@@ -140,7 +141,7 @@ public class SecondOpMode extends AbstractOpMode
         // Swerve Drives
 
         if (swerveDrive != null) {
-            swerveDrive.drive(driveStick_X, driveStick_Y, -rotateStick_X);
+            swerveDrive.drive(driveStick_X, driveStick_Y, -rotateStick_X, heading);
             swerveDrive.addData(telemetry);
         }
 
