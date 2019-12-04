@@ -8,8 +8,7 @@ class Config {
     // Intake Component
     final static String INTAKE_LEFT = "intake_left";
     final static String INTAKE_RIGHT = "intake_right";
-    final static String INTAKE_LIFT = "intake_lift";
-    final static String INTAKE_LIFT_ENCODER = "intake_lift";
+    final static String INTAKE_LIFT = "intake_lift";  // has encoder on it
 
     // Stilt Component
     final static String LEFT_STILT = "left_stilt";

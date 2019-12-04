@@ -14,8 +14,7 @@ abstract public class AbstractOpMode extends OpMode {
 
 
     // Swerve Drives
-    SwerveDrive leftSwerveDrive;
-    SwerveDrive rightSwerveDrive;
+    SwerveDrive swerveDrive;
 
     // Stacker
     StackerComponent stackerComponent;
@@ -37,7 +36,7 @@ abstract public class AbstractOpMode extends OpMode {
 
         intakeComponent = new IntakeComponent(
                 dcMotor(Config.INTAKE_LEFT), dcMotor(Config.INTAKE_RIGHT),
-                dcMotor(Config.INTAKE_LIFT), dcMotor(Config.INTAKE_LIFT_ENCODER));
+                dcMotor(Config.INTAKE_LIFT));
 
         // Two Stilt Servos
 
@@ -47,12 +46,14 @@ abstract public class AbstractOpMode extends OpMode {
 
         // Initialize Two Swerve Drives
 
-        leftSwerveDrive = new SwerveDrive(
-                dcMotor(Config.LEFT_SD1), dcMotor(Config.LEFT_SD2), crServo(Config.LEFT_SD3),
-                dcMotor(Config.LEFT_SD_SERVO_ENCODER), dcMotor(Config.LEFT_SD_MOTOR_ENCODER));
-        rightSwerveDrive = new SwerveDrive(
+        WheelDrive rightWheelDrive = new WheelDrive(
                 dcMotor(Config.RIGHT_SD1), dcMotor(Config.RIGHT_SD2), crServo(Config.RIGHT_SD3),
                 dcMotor(Config.RIGHT_SD_SERVO_ENCODER), dcMotor(Config.RIGHT_SD_MOTOR_ENCODER));
+        WheelDrive leftWheelDrive = new WheelDrive(
+                dcMotor(Config.LEFT_SD1), dcMotor(Config.LEFT_SD2), crServo(Config.LEFT_SD3),
+                dcMotor(Config.LEFT_SD_SERVO_ENCODER), dcMotor(Config.LEFT_SD_MOTOR_ENCODER));
+
+        swerveDrive = new SwerveDrive(rightWheelDrive, leftWheelDrive);
 
         // Update Telemetry
 

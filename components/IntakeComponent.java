@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.components;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -10,85 +11,87 @@ public class IntakeComponent extends Component {
 
     // Static variables
     // Positions
-    public static final double LOW_POSITION = 0;
-    public static final double MID_POSITION = 200;
-    public static final double HIGH_POSITION = 400;
+    public static final int LOW_POSITION = 0;
+    public static final int MID_POSITION = 200;
+    public static final int HIGH_POSITION = 400;
 
     // Hardware devices
-    DcMotor motor1;  // Left intake motor
-    DcMotor motor2;  // Right intake motor
-    DcMotor motor3;  // Vertical movement motor
-    DcMotor encoder;
+    DcMotor left;  // Left intake motor
+    DcMotor right;  // Right intake motor
+    DcMotor lift;  // Vertical movement motor
 
     // Instance variables
+    private double intakePower = 0;
 
-    double targetPosition = LOW_POSITION;
-    public boolean atTarget = false;
+    public IntakeComponent(DcMotor left, DcMotor right, DcMotor lift) {
+        this.left = left;
+        this.right = right;
+        this.lift = lift;
 
-    double intakePower = 0;
-    double verticalPower = 0;
-
-    public IntakeComponent(DcMotor motor1, DcMotor motor2, DcMotor motor3, DcMotor encoder_motor) {
-        this.motor1 = motor1;
-        this.motor2 = motor2;
-        this.motor3 = motor3;
-        this.encoder = encoder_motor;
-
-        this.motor1.setDirection(DcMotor.Direction.FORWARD);
-        this.motor2.setDirection(DcMotor.Direction.FORWARD);
-        this.motor3.setDirection(CRServo.Direction.FORWARD);
+        this.left.setDirection(DcMotor.Direction.FORWARD);
+        this.right.setDirection(DcMotor.Direction.FORWARD);
+        this.lift.setDirection(DcMotor.Direction.FORWARD);
     }
 
-    public void setTargetPosition(double targetPosition) {
-        this.targetPosition = targetPosition;
+
+    // Lift
+
+    private int getTargetPosition() {
+        return lift.getTargetPosition();
+    }
+    private int getCurrentPosition() {
+        return lift.getCurrentPosition();
     }
 
-    private double getCurrentPosition() {
-        return encoder.getCurrentPosition();
+    public boolean atTarget() {
+        return getCurrentPosition() == getTargetPosition();
     }
-
-    public void update() {
-        double tolerance = 10;
-        double slowdownFactor = 20.;
-
-        double currentPosition = getCurrentPosition();
-
-        double position_diff = targetPosition-currentPosition;
-        if (Math.abs(position_diff) < tolerance) {
-            verticalPower = 0;
+    public void setTargetPosition(int position) {
+        lift.setTargetPosition(position);
+        if (atTarget()) {
+            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lift.setPower(0);
         } else {
-            verticalPower = Range.clip(position_diff / slowdownFactor, -1, 1);
+            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift.setPower(1);
         }
-        atTarget = verticalPower == 0;
     }
 
+    private void tweakTargetPosition(int offset) {
+        setTargetPosition(getTargetPosition()+offset);
+    }
+    public void tweakTargetPositionUp() {
+        tweakTargetPosition(-10);
+    }
+    public void tweakTargetPositionDown() {
+        tweakTargetPosition(10);
+    }
+
+
+    // Intake in/out
+
+    public void setIntakePower(double power) {
+        intakePower = power;
+        left.setPower(intakePower);
+        right.setPower(-intakePower);
+    }
     public void setIntakeOff() {
-        intakePower = 0;
+        setIntakePower(0);
     }
     public void setIntakeIn() {
-        intakePower = -1;
+        setIntakePower(-1);
     }
     public void setIntakeOut() {
-        intakePower = 1;
+        setIntakePower(1);
     }
 
-    public void tweakPosition(double tweak) {
-        if (tweak < 0)
-            targetPosition += 1;
-        else if (tweak > 0)
-            targetPosition -= 1;
-    }
 
-    public void go() {
-        motor1.setPower(intakePower);
-        motor2.setPower(-intakePower);
-        motor3.setPower(verticalPower);
-    }
+    // Telemetry
 
     public void addData(Telemetry telemetry) {
         telemetry.addData("Intake Component",
-                "intakePower: (%f), verticalPower: (%.2f), currentPosition: (%.2f), targetPosition: (%.2f), atTarget %s",
-                intakePower, verticalPower, getCurrentPosition(), targetPosition, atTarget);
+                "intakePower: (%f), currentPosition: (%s), targetPosition: (%s), atTarget %s",
+                intakePower, getCurrentPosition(), getTargetPosition(), atTarget());
     }
 
 }

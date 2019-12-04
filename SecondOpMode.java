@@ -112,10 +112,12 @@ public class SecondOpMode extends AbstractOpMode
             if (intakeHigh)
                 intakeComponent.setTargetPosition(IntakeComponent.HIGH_POSITION);
 
-            intakeComponent.tweakPosition(intakeTweak);
+            if (intakeTweak < 0) {
+                intakeComponent.tweakTargetPositionDown();
+            } else if (intakeTweak > 0) {
+                intakeComponent.tweakTargetPositionUp();
+            }
 
-            intakeComponent.update();
-            intakeComponent.go();
             intakeComponent.addData(telemetry);
         }
 
@@ -137,18 +139,10 @@ public class SecondOpMode extends AbstractOpMode
 
         // Swerve Drives
 
-        if (leftSwerveDrive != null) {
-            leftSwerveDrive.update(driveStick_X, driveStick_Y, -rotateStick_X);
-            leftSwerveDrive.go();
-            leftSwerveDrive.addData(telemetry);
+        if (swerveDrive != null) {
+            swerveDrive.drive(driveStick_X, driveStick_Y, -rotateStick_X);
+            swerveDrive.addData(telemetry);
         }
-
-        if (rightSwerveDrive != null) {
-            rightSwerveDrive.update(driveStick_X, driveStick_Y, rotateStick_X);
-            rightSwerveDrive.go();
-            rightSwerveDrive.addData(telemetry);
-        }
-
 
         // Update telemetry
 

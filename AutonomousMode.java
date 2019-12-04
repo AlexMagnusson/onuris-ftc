@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.components.StiltComponent;
 import org.firstinspires.ftc.teamcode.components.Vector;
 
 
@@ -25,13 +26,8 @@ public class AutonomousMode extends AbstractOpMode
     Vector stiltMode;
 
     private void updateSwerves() {
-        leftSwerveDrive.update(driveX, driveY, rotate);
-        leftSwerveDrive.go();
-        leftSwerveDrive.addData(telemetry);
-
-        rightSwerveDrive.update(driveX, driveY, rotate);
-        rightSwerveDrive.go();
-        rightSwerveDrive.addData(telemetry);
+        swerveDrive.drive(driveX, driveY, rotate);
+        swerveDrive.addData(telemetry);
     }
 
     private void updateStilts() {
@@ -48,15 +44,15 @@ public class AutonomousMode extends AbstractOpMode
 
     @Override
     public void loop() {
-        currentRightPos = rightSwerveDrive.getMotorPosition();
-        currentLeftPos = leftSwerveDrive.getMotorPosition();
+        currentRightPos = swerveDrive.right.getMotorPosition();
+        currentLeftPos = swerveDrive.left.getMotorPosition();
 
         telemetry.addData("STAGE", "Stage %s, rightPosition: (%f), leftPosition: (%f)", currentStage, currentRightPos, currentLeftPos);
 
         driveX = 0;
         driveY = 0;
         rotate = 0;
-        stiltMode = stiltComponent.ZERO_MODE;
+        stiltMode = StiltComponent.ZERO_MODE;
 
         Vector clampMode = new Vector(-1600, 1600);
         Vector upMode = new Vector(-3000, 3000);
