@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.components.IntakeComponent;
-import org.firstinspires.ftc.teamcode.components.StiltComponent;
+import org.firstinspires.ftc.teamcode.hardware.components.IntakeComponent;
+import org.firstinspires.ftc.teamcode.hardware.components.StiltComponent;
 
 
 @TeleOp(name="Julian's Second Op Mode", group="Iterative Opmode")
@@ -22,32 +22,38 @@ public class SecondOpMode extends AbstractOpMode
         if (gamepad1.left_bumper) {
             operationMode = INTAKE_MODE;
 
-            stiltComponent.setTargetMode(StiltComponent.INTAKE_MODE);
+            robot.stilt.setTargetMode(StiltComponent.INTAKE_MODE);
         }
         if (gamepad1.right_bumper) {
             operationMode = STACK_MODE;
 
-            stiltComponent.setTargetMode(StiltComponent.STACK_MODE);
+            robot.stilt.setTargetMode(StiltComponent.STACK_MODE);
         }
 
+        boolean gateForward = false;
+        boolean gateBackward = false;
+        if (operationMode == STACK_MODE) {
+            if (gamepad1.left_stick_y > 0.1) {
+                gateForward = true;
+            } else if (gamepad1.left_stick_y < -0.1) {
+                gateBackward = true;
+            }
+        }
 
-        boolean stackerUp;
-        boolean stackerDown;
+        boolean stackerUp = false;
+        boolean stackerDown = false;
         if (operationMode == STACK_MODE) {
             stackerUp = gamepad1.dpad_up;
             stackerDown = gamepad1.dpad_down;
-        } else {
-            stackerUp = false;
-            stackerDown = false;
         }
 
-        boolean intakeIn;
-        boolean intakeOut;
+        boolean intakeIn = false;
+        boolean intakeOut = false;
 
-        boolean intakeLow;
-        boolean intakeMid;
-        boolean intakeHigh;
-        double intakeTweak;
+        boolean intakeLow = false;
+        boolean intakeMid = false;
+        boolean intakeHigh = false;
+        double intakeTweak = 0;
         if (operationMode == INTAKE_MODE) {
             intakeLow = gamepad1.a;
             intakeMid = gamepad1.b;
@@ -55,94 +61,94 @@ public class SecondOpMode extends AbstractOpMode
             intakeIn = gamepad1.dpad_down;
             intakeOut = gamepad1.dpad_up;
             intakeTweak = gamepad1.right_stick_y;
-        } else {
-            intakeIn = false;
-            intakeOut = false;
-            intakeLow = false;
-            intakeMid = false;
-            intakeHigh = false;
-            intakeTweak = 0;
         }
 
-        boolean stiltMode;
-        boolean stiltMode0;
-        boolean stiltMode1;
-        boolean stiltMode2;
+        boolean stiltMode = false;
+        boolean stiltMode0 = false;
+        boolean stiltMode1 = false;
+        boolean stiltMode2 = false;
         if (operationMode == STACK_MODE) {
             stiltMode = gamepad1.x;
             stiltMode0 = gamepad1.a;
             stiltMode1 = gamepad1.b;
             stiltMode2 = gamepad1.y;
-        } else {
-            stiltMode = false;
-            stiltMode0 = false;
-            stiltMode1 = false;
-            stiltMode2 = false;
         }
 
         double driveStick_X = gamepad2.right_stick_x;
         double driveStick_Y = gamepad2.right_stick_y;
         double rotateStick_X = gamepad2.left_stick_x;
 
+        // Gate Component
+
+        if (robot.gate != null) {
+            if (gateForward)
+                robot.gate.setForward();
+            else if (gateBackward)
+                robot.gate.setBackward();
+            else
+                robot.gate.setOff();
+            robot.gate.addData(telemetry);
+        }
+
         // Stacker Component
 
-        if (stackerComponent != null) {
+        if (robot.stacker != null) {
             if (stackerUp)
-                stackerComponent.setUp();
-            if (stackerDown)
-                stackerComponent.setDown();
-            stackerComponent.update();
-            stackerComponent.go();
-            stackerComponent.addData(telemetry);
+                robot.stacker.setUp();
+            else if (stackerDown)
+                robot.stacker.setDown();
+            else
+                robot.stacker.setOff();
+            robot.stacker.addData(telemetry);
         }
 
         // Intake Component
 
-        if (intakeComponent != null) {
+        if (robot.intake != null) {
 
-            intakeComponent.setIntakeOff();
+            robot.intake.setIntakeOff();
             if (intakeIn)
-                intakeComponent.setIntakeIn();
+                robot.intake.setIntakeIn();
             else if (intakeOut)
-                intakeComponent.setIntakeOut();
+                robot.intake.setIntakeOut();
 
             if (intakeLow)
-                intakeComponent.setTargetPosition(IntakeComponent.LOW_POSITION);
+                robot.intake.setTargetPosition(IntakeComponent.LOW_POSITION);
             if (intakeMid)
-                intakeComponent.setTargetPosition(IntakeComponent.MID_POSITION);
+                robot.intake.setTargetPosition(IntakeComponent.MID_POSITION);
             if (intakeHigh)
-                intakeComponent.setTargetPosition(IntakeComponent.HIGH_POSITION);
+                robot.intake.setTargetPosition(IntakeComponent.HIGH_POSITION);
 
             if (intakeTweak < 0) {
-                intakeComponent.tweakTargetPositionDown();
+                robot.intake.tweakTargetPositionDown();
             } else if (intakeTweak > 0) {
-                intakeComponent.tweakTargetPositionUp();
+                robot.intake.tweakTargetPositionUp();
             }
 
-            intakeComponent.addData(telemetry);
+            robot.intake.addData(telemetry);
         }
 
         // Stilt Component
 
-        if (stiltComponent != null) {
+        if (robot.stilt != null) {
             if (stiltMode)
-                stiltComponent.setTargetMode(StiltComponent.STACK_MODE);
+                robot.stilt.setTargetMode(StiltComponent.STACK_MODE);
             if (stiltMode0)
-                stiltComponent.setTargetMode(StiltComponent.STACK0_MODE);
+                robot.stilt.setTargetMode(StiltComponent.STACK0_MODE);
             if (stiltMode1)
-                stiltComponent.setTargetMode(StiltComponent.STACK1_MODE);
+                robot.stilt.setTargetMode(StiltComponent.STACK1_MODE);
             if (stiltMode2)
-                stiltComponent.setTargetMode(StiltComponent.STACK2_MODE);
-            stiltComponent.update();
-            stiltComponent.go();
-            stiltComponent.addData(telemetry);
+                robot.stilt.setTargetMode(StiltComponent.STACK2_MODE);
+            robot.stilt.update();
+            robot.stilt.go();
+            robot.stilt.addData(telemetry);
         }
 
         // Swerve Drives
 
-        if (swerveDrive != null) {
-            swerveDrive.drive(driveStick_X, driveStick_Y, -rotateStick_X, heading);
-            swerveDrive.addData(telemetry);
+        if (robot.swerveDrive != null) {
+            robot.swerveDrive.drive(driveStick_X, driveStick_Y,  rotateStick_X);
+            robot.swerveDrive.addData(telemetry);
         }
 
         // Update telemetry

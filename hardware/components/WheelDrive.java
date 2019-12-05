@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.teamcode.components;
+package org.firstinspires.ftc.teamcode.hardware.components;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class WheelDrive extends Component {
 
@@ -101,10 +100,11 @@ public class WheelDrive extends Component {
         double servoPower;
         if (Math.abs(turnAboutFace) < Math.abs(turnCurrent)) {
             reverseMotorDirection();
-            servoPower = -Range.clip(turnAboutFace, -1, 1);
+            servoPower = -turnAboutFace;
         } else {
-            servoPower = -Range.clip(turnCurrent, -1, 1);
+            servoPower = -turnCurrent;
         }
+        servoPower = Range.clip(servoPower, -0.5, 0.5);
         servo.setPower(servoPower);
 
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.components;
+package org.firstinspires.ftc.teamcode.hardware.components;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -21,10 +21,16 @@ public class SwerveDrive extends Component {
         double left_Y = driveY + rotateX;
 
         double right_speed = Math.sqrt(Math.pow(driveX, 2) + Math.pow(right_Y, 2));
-        double right_angle = Math.atan2(right_Y, driveX);
+        double right_angle = Math.atan2(driveX, right_Y);
 
         double left_speed = Math.sqrt(Math.pow(driveX, 2) + Math.pow(left_Y, 2));
-        double left_angle = Math.atan2(left_Y, driveX);
+        double left_angle = Math.atan2(driveX, left_Y);
+
+        double max = Math.abs(Math.abs(left_speed) > Math.abs(right_speed) ? left_speed : right_speed);
+        if (max > 1) {
+            right_speed /= max;
+            left_speed /= max;
+        }
 
         right.drive(right_speed, right_angle);
         left.drive(left_speed, left_angle);
@@ -46,9 +52,12 @@ public class SwerveDrive extends Component {
     }
 
     public void addData(Telemetry telemetry) {
-        telemetry.addData("Swerve Drives",
-                "LEFT: %s\nRIGHT: %s",
-                left.toString(), right.toString());
+        telemetry.addData("Right Swerve Drive",
+                "RIGHT: %s",
+                right.toString());
+        telemetry.addData("Left Swerve Drive",
+                "LEFT: %s",
+                left.toString());
     }
 
 }

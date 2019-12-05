@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.components.StiltComponent;
-import org.firstinspires.ftc.teamcode.components.Vector;
+import org.firstinspires.ftc.teamcode.hardware.components.StiltComponent;
+import org.firstinspires.ftc.teamcode.hardware.components.Vector;
 
 
 @Autonomous(name="Julian's Auto Mode")
@@ -26,15 +26,15 @@ public class AutonomousMode extends AbstractOpMode
     Vector stiltMode;
 
     private void updateSwerves() {
-        swerveDrive.drive(driveX, driveY, rotate, heading);
-        swerveDrive.addData(telemetry);
+        robot.swerveDrive.drive(driveX, driveY, rotate, -heading);
+        robot.swerveDrive.addData(telemetry);
     }
 
     private void updateStilts() {
-        stiltComponent.setTargetMode(stiltMode);
-        stiltComponent.update();
-        stiltComponent.go();
-        stiltComponent.addData(telemetry);
+        robot.stilt.setTargetMode(stiltMode);
+        robot.stilt.update();
+        robot.stilt.go();
+        robot.stilt.addData(telemetry);
     }
 
     private void update() {
@@ -46,8 +46,8 @@ public class AutonomousMode extends AbstractOpMode
     public void loop() {
         super.loop();
 
-        currentRightPos = swerveDrive.right.getMotorPosition();
-        currentLeftPos = swerveDrive.left.getMotorPosition();
+        currentRightPos = robot.swerveDrive.right.getMotorPosition();
+        currentLeftPos = robot.swerveDrive.left.getMotorPosition();
 
         telemetry.addData("STAGE", "Stage %s, rightPosition: (%f), leftPosition: (%f)", currentStage, currentRightPos, currentLeftPos);
 
@@ -65,7 +65,7 @@ public class AutonomousMode extends AbstractOpMode
         } else {
             if (currentStage == 1) {  // Move backward towards foundation
                 driveX = 0;
-                driveY = .8;
+                driveY = .3;
                 rotate = 0;
                 stiltMode = upMode;
 
@@ -82,12 +82,12 @@ public class AutonomousMode extends AbstractOpMode
 
                 update();
 
-                if (stiltComponent.atTarget) {
+                if (robot.stilt.atTarget) {
                     nextStage();
                 }
             } else if (currentStage == 3) {  // Move forward, dragging foundation
                 driveX = 0;
-                driveY = -1;
+                driveY = -.3;
                 rotate = 0;
                 stiltMode = clampMode;
 
@@ -104,11 +104,11 @@ public class AutonomousMode extends AbstractOpMode
 
                 update();
 
-                if (stiltComponent.atTarget) {
+                if (robot.stilt.atTarget) {
                     nextStage();
                 }
             } else if (currentStage == 5) {  // Move rightward
-                driveX = -.8;
+                driveX = -.3;
                 driveY = 0;
                 rotate = 0;
                 stiltMode = upMode;
@@ -122,6 +122,8 @@ public class AutonomousMode extends AbstractOpMode
                 update();
             }
         }
+
+        telemetry.update();
     }
 
     private double currentOffsetLeft() {
@@ -136,7 +138,7 @@ public class AutonomousMode extends AbstractOpMode
         initialRightPos = currentRightPos;
         initialLeftPos = currentLeftPos;
         currentStage += 1;
-        waiting = 500;
+        waiting = 20;
     }
 
 
