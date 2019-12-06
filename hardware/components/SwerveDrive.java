@@ -16,6 +16,7 @@ public class SwerveDrive extends Component {
         // -1 (left) <= driveX <= 1 (right)
         // -1 (backward) <= driveY <= 1 (forward)
         // -1 (turn left) <= rotateX <= 1 (turn right)
+        rotateX *= 0.5;
 
         double right_Y = driveY - rotateX;
         double left_Y = driveY + rotateX;

@@ -20,6 +20,7 @@ abstract public class AbstractOpMode extends OpMode {
 
     // State used for updating telemetry
     double heading;
+    double offsetGyro = 0;
 
     // Hardware
     Robot robot;
@@ -58,7 +59,11 @@ abstract public class AbstractOpMode extends OpMode {
     }
 
     private void updateHeading() {
-        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+        heading = -imu.getAngularOrientation(
+                AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle + Math.PI;
+    }
+    public double getAdjustedHeading() {
+        return heading - offsetGyro;
     }
 
     /*

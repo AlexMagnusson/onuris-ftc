@@ -14,10 +14,20 @@ public class SecondOpMode extends AbstractOpMode
     final int STACK_MODE = 1;  // stilt/stacking mode (back)
 
     int operationMode = INTAKE_MODE;
+    boolean useGyro = false;
 
     @Override
     public void loop() {
         super.loop();
+
+        if (gamepad2.b)
+            useGyro = true;
+        if (gamepad2.x)
+            useGyro = false;
+        if (gamepad2.y)
+            offsetGyro = heading;
+
+        telemetry.addData("Gyro", "Using gyro? %s; offsetGyro: (%f)", useGyro, offsetGyro);
 
         if (gamepad1.left_bumper) {
             operationMode = INTAKE_MODE;
@@ -147,7 +157,10 @@ public class SecondOpMode extends AbstractOpMode
         // Swerve Drives
 
         if (robot.swerveDrive != null) {
-            robot.swerveDrive.drive(driveStick_X, driveStick_Y,  rotateStick_X);
+            if (useGyro)
+                robot.swerveDrive.drive(driveStick_X, driveStick_Y,  rotateStick_X, getAdjustedHeading());
+            else
+                robot.swerveDrive.drive(driveStick_X, driveStick_Y,  rotateStick_X);
             robot.swerveDrive.addData(telemetry);
         }
 

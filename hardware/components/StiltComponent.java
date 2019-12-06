@@ -12,7 +12,7 @@ public class StiltComponent extends Component {
     // Static variables
     // Modes
     public static final Vector ZERO_MODE = new Vector(0, 0);
-    public static final Vector INTAKE_MODE = new Vector(0, -600);
+    public static final Vector INTAKE_MODE = new Vector(0, 0);
     public static final Vector STACK_MODE = new Vector(-13000,  2700);
     public static final Vector STACK0_MODE = new Vector(-13000,  950);
     public static final Vector STACK1_MODE = new Vector(-7000,  950);

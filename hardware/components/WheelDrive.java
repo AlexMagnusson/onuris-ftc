@@ -104,7 +104,7 @@ public class WheelDrive extends Component {
         } else {
             servoPower = -turnCurrent;
         }
-        servoPower = Range.clip(servoPower, -0.5, 0.5);
+        servoPower = Range.clip(servoPower, -1, 1);
         servo.setPower(servoPower);
 
     }

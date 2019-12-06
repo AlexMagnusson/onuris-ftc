@@ -26,7 +26,7 @@ public class AutonomousMode extends AbstractOpMode
     Vector stiltMode;
 
     private void updateSwerves() {
-        robot.swerveDrive.drive(driveX, driveY, rotate, -heading);
+        robot.swerveDrive.drive(driveX, driveY, rotate, getAdjustedHeading());
         robot.swerveDrive.addData(telemetry);
     }
 
@@ -65,7 +65,7 @@ public class AutonomousMode extends AbstractOpMode
         } else {
             if (currentStage == 1) {  // Move backward towards foundation
                 driveX = 0;
-                driveY = .3;
+                driveY = -.6;
                 rotate = 0;
                 stiltMode = upMode;
 
@@ -87,7 +87,7 @@ public class AutonomousMode extends AbstractOpMode
                 }
             } else if (currentStage == 3) {  // Move forward, dragging foundation
                 driveX = 0;
-                driveY = -.3;
+                driveY = .8;
                 rotate = 0;
                 stiltMode = clampMode;
 
@@ -108,7 +108,7 @@ public class AutonomousMode extends AbstractOpMode
                     nextStage();
                 }
             } else if (currentStage == 5) {  // Move rightward
-                driveX = -.3;
+                driveX = -.6;
                 driveY = 0;
                 rotate = 0;
                 stiltMode = upMode;
