@@ -88,6 +88,10 @@ public class SecondOpMode extends AbstractOpMode
         double driveStick_Y = gamepad2.right_stick_y;
         double rotateStick_X = gamepad2.left_stick_x;
 
+        telemetry.addData("Controller Inputs",
+                "driveStick_X: (%f), driveStick_Y: (%f), rotateStick_X: (%f)",
+                driveStick_X, driveStick_Y, rotateStick_X);
+
         // Gate Component
 
         if (robot.gate != null) {
@@ -158,9 +162,9 @@ public class SecondOpMode extends AbstractOpMode
 
         if (robot.swerveDrive != null) {
             if (useGyro)
-                robot.swerveDrive.drive(driveStick_X, driveStick_Y,  rotateStick_X, getAdjustedHeading());
+                robot.swerveDrive.drive(driveStick_X, driveStick_Y, rotateStick_X, getAdjustedHeading());
             else
-                robot.swerveDrive.drive(driveStick_X, driveStick_Y,  rotateStick_X);
+                robot.swerveDrive.drive(driveStick_X, driveStick_Y, rotateStick_X);
             robot.swerveDrive.addData(telemetry);
         }
 
