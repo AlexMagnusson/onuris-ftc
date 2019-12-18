@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class IntakeComponent extends Component {
+public class Intake extends Component {
 
     // Static variables
     // Positions
@@ -20,7 +20,7 @@ public class IntakeComponent extends Component {
     // Instance variables
     private double intakePower = 0;
 
-    public IntakeComponent(DcMotor left, DcMotor right, DcMotor lift) {
+    public Intake(DcMotor left, DcMotor right, DcMotor lift) {
         this.left = left;
         this.right = right;
         this.lift = lift;

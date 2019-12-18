@@ -1,19 +1,18 @@
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.hardware.components.StiltComponent;
+import org.firstinspires.ftc.teamcode.hardware.components.Stilt;
 import org.firstinspires.ftc.teamcode.hardware.components.Vector;
 
 
-@Autonomous(name="Julian's Blue Mode")
-public class BlueAlliance extends AbstractAutoMode
+@Autonomous(name="Julian's Second Blue Mode")
+public class SecondBlueAlliance extends AbstractAutoMode
 {
 
     private void updateSwerves() {
-        robot.swerveDrive.drive(-driveX, driveY, rotate, getAdjustedHeading());
+        robot.swerveDrive.drive(-driveX, driveY, rotate, robot.gyro.getAdjustedHeading());
         robot.swerveDrive.addData(telemetry);
     }
 
@@ -30,7 +29,7 @@ public class BlueAlliance extends AbstractAutoMode
     }
 
     private double rotationTowardsTarget(double max) {
-        double diff = constrainRad(targetHeading)-constrainRad(heading);
+        double diff = constrainRad(targetHeading)-constrainRad(robot.gyro.getAdjustedHeading());
         if (diff > 0)
             return max;
         else if (diff < 0)
@@ -51,7 +50,7 @@ public class BlueAlliance extends AbstractAutoMode
         driveX = 0;
         driveY = 0;
         rotate = 0;
-        stiltMode = StiltComponent.ZERO_MODE;
+        stiltMode = Stilt.ZERO_MODE;
 
         Vector clampMode = new Vector(-1600, 1600);
         Vector upMode = new Vector(-3500, 3500);
@@ -60,7 +59,7 @@ public class BlueAlliance extends AbstractAutoMode
             waiting -= 1;
             updateSwerves();
         } else {
-            if (currentStage == 1) {  // Move backward towards foundation
+            if (currentStage == 1) {  // Move south towards foundation
                 driveX = .1;
                 driveY = -.4;
                 targetHeading = Math.PI;
@@ -84,7 +83,7 @@ public class BlueAlliance extends AbstractAutoMode
                 if (robot.stilt.atTarget) {
                     nextStage();
                 }
-            } else if (currentStage == 3) {  // Move forward, dragging foundation
+            } else if (currentStage == 3) {  // Move north, dragging foundation
                 driveX = -.3;
                 driveY = .75;
                 targetHeading = Math.PI/2;
@@ -96,7 +95,7 @@ public class BlueAlliance extends AbstractAutoMode
                 if (currentOffsetRight() >= 1700) {
                     nextStage();
                 }
-            } else if (currentStage == 4) {  // Move backward, turning foundation
+            } else if (currentStage == 4) {  // Move west, turning foundation
                 driveX = 0.7;
                 driveY = 0;
                 targetHeading = Math.PI/2;
@@ -120,24 +119,24 @@ public class BlueAlliance extends AbstractAutoMode
                 if (robot.stilt.atTarget) {
                     nextStage();
                 }
-            } else if (currentStage == 6) {  // Move rightward
+            } else if (currentStage == 6) {  // Back up
                 driveX = -.5;
                 driveY = 0;
                 targetHeading = Math.PI;
                 rotate = rotationTowardsTarget(.1);
-                stiltMode = StiltComponent.ZERO_MODE;
+                stiltMode = Stilt.ZERO_MODE;
 
                 update();
 
                 if (currentOffsetRight() >= 400) {
                     nextStage();
                 }
-            } else if (currentStage == 7) {  // Move rightward
-                driveX = -.4;
-                driveY = 0;
+            } else if (currentStage == 7) {  // Move north to the wall
+                driveX = 0;
+                driveY = .5;
                 targetHeading = Math.PI;
                 rotate = rotationTowardsTarget(.1);
-                stiltMode = StiltComponent.ZERO_MODE;
+                stiltMode = Stilt.ZERO_MODE;
 
                 update();
 

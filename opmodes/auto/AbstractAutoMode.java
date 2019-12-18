@@ -1,11 +1,8 @@
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.teamcode.hardware.components.StiltComponent;
 import org.firstinspires.ftc.teamcode.hardware.components.Vector;
+import org.firstinspires.ftc.teamcode.opmodes.AbstractOpMode;
 
 
 abstract public class AbstractAutoMode extends AbstractOpMode

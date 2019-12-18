@@ -6,10 +6,12 @@ public class SwerveDrive extends Component {
 
     public WheelDrive left;
     public WheelDrive right;
+    public WheelDrive front;
 
-    public SwerveDrive(WheelDrive right, WheelDrive left) {
+    public SwerveDrive(WheelDrive right, WheelDrive left, WheelDrive front) {
         this.right = right;
         this.left = left;
+        this.front = front;
     }
 
     private void doDrive(double driveX, double driveY, double rotateX) {
@@ -32,6 +34,8 @@ public class SwerveDrive extends Component {
             right_speed /= max;
             left_speed /= max;
         }
+        right_speed = right_speed*Math.abs(right_speed);
+        left_speed = left_speed*Math.abs(left_speed);
 
         right.drive(right_speed, right_angle);
         left.drive(left_speed, left_angle);

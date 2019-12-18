@@ -4,11 +4,11 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
-public class GateComponent extends Component {
+public class Gate extends Component {
 
     CRServo servo;
 
-    public GateComponent(CRServo servo) {
+    public Gate(CRServo servo) {
         this.servo = servo;
     }
 

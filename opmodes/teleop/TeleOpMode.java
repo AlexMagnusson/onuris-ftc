@@ -1,14 +1,15 @@
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.hardware.components.IntakeComponent;
-import org.firstinspires.ftc.teamcode.hardware.components.StiltComponent;
+import org.firstinspires.ftc.teamcode.opmodes.AbstractOpMode;
+import org.firstinspires.ftc.teamcode.hardware.components.Intake;
+import org.firstinspires.ftc.teamcode.hardware.components.Stilt;
 
 
 @TeleOp(name="Julian's Second Op Mode", group="Iterative Opmode")
-public class SecondOpMode extends AbstractOpMode
+public class TeleOpMode extends AbstractOpMode
 {
     final int INTAKE_MODE = 0;   // intake mode (front)
     final int STACK_MODE = 1;  // stilt/stacking mode (back)
@@ -25,19 +26,19 @@ public class SecondOpMode extends AbstractOpMode
         if (gamepad2.x)
             useGyro = false;
         if (gamepad2.y)
-            offsetGyro = heading;
+            robot.gyro.resetHeading();
 
-        telemetry.addData("Gyro", "Using gyro? %s; offsetGyro: (%f)", useGyro, offsetGyro);
+        telemetry.addData("Gyro", "Using gyro? %s", useGyro);
 
         if (gamepad1.left_bumper) {
             operationMode = INTAKE_MODE;
 
-            robot.stilt.setTargetMode(StiltComponent.INTAKE_MODE);
+            robot.stilt.setTargetMode(Stilt.INTAKE_MODE);
         }
         if (gamepad1.right_bumper) {
             operationMode = STACK_MODE;
 
-            robot.stilt.setTargetMode(StiltComponent.STACK_MODE);
+            robot.stilt.setTargetMode(Stilt.STACK_MODE);
         }
 
         boolean gateForward = false;
@@ -127,11 +128,11 @@ public class SecondOpMode extends AbstractOpMode
                 robot.intake.setIntakeOut();
 
             if (intakeLow)
-                robot.intake.setTargetPosition(IntakeComponent.LOW_POSITION);
+                robot.intake.setTargetPosition(Intake.LOW_POSITION);
             if (intakeMid)
-                robot.intake.setTargetPosition(IntakeComponent.MID_POSITION);
+                robot.intake.setTargetPosition(Intake.MID_POSITION);
             if (intakeHigh)
-                robot.intake.setTargetPosition(IntakeComponent.HIGH_POSITION);
+                robot.intake.setTargetPosition(Intake.HIGH_POSITION);
 
             if (intakeTweak < 0) {
                 robot.intake.tweakTargetPositionDown();
@@ -146,13 +147,13 @@ public class SecondOpMode extends AbstractOpMode
 
         if (robot.stilt != null) {
             if (stiltMode)
-                robot.stilt.setTargetMode(StiltComponent.STACK_MODE);
+                robot.stilt.setTargetMode(Stilt.STACK_MODE);
             if (stiltMode0)
-                robot.stilt.setTargetMode(StiltComponent.STACK0_MODE);
+                robot.stilt.setTargetMode(Stilt.STACK0_MODE);
             if (stiltMode1)
-                robot.stilt.setTargetMode(StiltComponent.STACK1_MODE);
+                robot.stilt.setTargetMode(Stilt.STACK1_MODE);
             if (stiltMode2)
-                robot.stilt.setTargetMode(StiltComponent.STACK2_MODE);
+                robot.stilt.setTargetMode(Stilt.STACK2_MODE);
             robot.stilt.update();
             robot.stilt.go();
             robot.stilt.addData(telemetry);
@@ -162,7 +163,7 @@ public class SecondOpMode extends AbstractOpMode
 
         if (robot.swerveDrive != null) {
             if (useGyro)
-                robot.swerveDrive.drive(driveStick_X, driveStick_Y, rotateStick_X, getAdjustedHeading());
+                robot.swerveDrive.drive(driveStick_X, driveStick_Y, rotateStick_X, robot.gyro.getAdjustedHeading());
             else
                 robot.swerveDrive.drive(driveStick_X, driveStick_Y, rotateStick_X);
             robot.swerveDrive.addData(telemetry);

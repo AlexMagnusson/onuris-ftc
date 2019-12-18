@@ -33,6 +33,15 @@ public class WheelDrive extends Component {
         this.motor2.setDirection(DcMotor.Direction.FORWARD);
     }
 
+    // Helper functions
+
+    /**
+     * Constrains radians to an angle from 0 to TWO_PI
+     */
+    private double constrainRad(double r) {
+        return TWO_PI + (r % TWO_PI);
+    }
+
 
     // Drive Motors
 
@@ -51,13 +60,6 @@ public class WheelDrive extends Component {
 
 
     // Servo
-
-    /**
-     * Constrains radians to an angle from 0 to TWO_PI
-     */
-    private double constrainRad(double r) {
-        return TWO_PI + (r % TWO_PI);
-    }
 
     /**
      * Calculate rotation of the swerve drive servo, in radians (0 - TWO_PI)
@@ -91,18 +93,24 @@ public class WheelDrive extends Component {
         setDrivePower(power);
 
         // Servo
-        double currentRotation = currentRotation();
-        double aboutFaceRotation = constrainRad(currentRotation + Math.PI);
+        double currentAngle = currentRotation();
+        double aboutFaceAngle = constrainRad(currentAngle + Math.PI);
 
-        double turnCurrent = calculateTurn(currentRotation, angle);
-        double turnAboutFace = calculateTurn(aboutFaceRotation, angle);
+        double turnCurrent = calculateTurn(currentAngle, angle);
+        double turnAboutFace = calculateTurn(aboutFaceAngle, angle);
 
-        double servoPower;
+        double realTurn;
         if (Math.abs(turnAboutFace) < Math.abs(turnCurrent)) {
             reverseMotorDirection();
-            servoPower = -turnAboutFace;
+            realTurn = -turnAboutFace;
         } else {
-            servoPower = -turnCurrent;
+            realTurn = -turnCurrent;
+        }
+        double servoPower;
+        if (Math.abs(realTurn) < 0.5) {
+            servoPower = realTurn;
+        } else {
+            servoPower = (realTurn < 0) ? -1 : 1;
         }
         servoPower = Range.clip(servoPower, -1, 1);
         servo.setPower(servoPower);

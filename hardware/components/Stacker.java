@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class StackerComponent extends Component {
+public class Stacker extends Component {
 
     // Hardware devices
     DcMotor motor;
 
-    public StackerComponent(DcMotor motor) {
+    public Stacker(DcMotor motor) {
         this.motor = motor;
 
         this.motor.setDirection(DcMotor.Direction.FORWARD);

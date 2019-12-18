@@ -1,10 +1,10 @@
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.hardware.components.StiltComponent;
+import org.firstinspires.ftc.teamcode.hardware.components.Stilt;
 import org.firstinspires.ftc.teamcode.hardware.components.Vector;
 
 
@@ -13,7 +13,7 @@ public class RedAlliance extends AbstractAutoMode
 {
 
     private void updateSwerves() {
-        robot.swerveDrive.drive(driveX, driveY, rotate, getAdjustedHeading());
+        robot.swerveDrive.drive(driveX, driveY, rotate, robot.gyro.getAdjustedHeading());
         robot.swerveDrive.addData(telemetry);
     }
 
@@ -30,7 +30,7 @@ public class RedAlliance extends AbstractAutoMode
     }
 
     private double rotationTowardsTarget(double max) {
-        double diff = constrainRad(targetHeading)-constrainRad(heading);
+        double diff = constrainRad(targetHeading)-constrainRad(robot.gyro.getAdjustedHeading());
         return Range.clip(diff,-max, max);
     }
 
@@ -46,7 +46,7 @@ public class RedAlliance extends AbstractAutoMode
         driveX = 0;
         driveY = 0;
         rotate = 0;
-        stiltMode = StiltComponent.ZERO_MODE;
+        stiltMode = Stilt.ZERO_MODE;
 
         Vector clampMode = new Vector(-1600, 1600);
         Vector upMode = new Vector(-3500, 3500);
@@ -120,7 +120,7 @@ public class RedAlliance extends AbstractAutoMode
                 driveY = 0;
                 targetHeading = Math.PI;
                 rotate = rotationTowardsTarget(.1);
-                stiltMode = StiltComponent.ZERO_MODE;
+                stiltMode = Stilt.ZERO_MODE;
 
                 update();
 
@@ -132,7 +132,7 @@ public class RedAlliance extends AbstractAutoMode
                 driveY = 0;
                 targetHeading = Math.PI;
                 rotate = rotationTowardsTarget(.1);
-                stiltMode = StiltComponent.ZERO_MODE;
+                stiltMode = Stilt.ZERO_MODE;
 
                 update();
 

@@ -30,6 +30,12 @@ public class Config {
     public final static String RIGHT_SD_SERVO_ENCODER = "left_sd1";
     public final static String RIGHT_SD_MOTOR_ENCODER = "right_sd2";
 
+    public final static String FRONT_SD1 = "front_sd1";
+    public final static String FRONT_SD2 = "front_sd2";
+    public final static String FRONT_SD3 = "front_sd3";
+    public final static String FRONT_SD_SERVO_ENCODER = "front_sd1";
+    public final static String FRONT_SD_MOTOR_ENCODER = "front_sd2";
+
     // Gate
 
     public final static String GATE_SERVO = "gate";

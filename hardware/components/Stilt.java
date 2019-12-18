@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
-public class StiltComponent extends Component {
+public class Stilt extends Component {
 
     // Static variables
     // Modes
@@ -32,7 +32,7 @@ public class StiltComponent extends Component {
     double footPower = 0;
     double wheelPower = 0;
 
-    public StiltComponent(CRServo foot_servo, DcMotor foot_encoder, CRServo wheel_servo, DcMotor wheel_encoder) {
+    public Stilt(CRServo foot_servo, DcMotor foot_encoder, CRServo wheel_servo, DcMotor wheel_encoder) {
         this.foot_servo = foot_servo;
         this.foot_encoder = foot_encoder;
         this.wheel_servo = wheel_servo;
