@@ -7,12 +7,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Intake extends Component {
 
-    // Static variables
-    // Positions
-    public static final int LOW_POSITION = 0;
-    public static final int MID_POSITION = 200;
-    public static final int HIGH_POSITION = 400;
-
     // Hardware devices
     DcMotor left;  // Left intake motor
     DcMotor right;  // Right intake motor
@@ -20,6 +14,7 @@ public class Intake extends Component {
 
     // Instance variables
     private double intakePower = 0;
+    private double liftPower = 0;
 
     public Intake(DcMotor left, DcMotor right, CRServo lift) {
         this.left = left;
@@ -33,37 +28,16 @@ public class Intake extends Component {
 
     // Lift
 
-//    private int getTargetPosition() {
-//        return lift.getTargetPosition();
-//    }
-//    private int getCurrentPosition() {
-//        return lift.getCurrentPosition();
-//    }
-//
-//    public boolean atTarget() {
-//        return getCurrentPosition() == getTargetPosition();
-//    }
-//    public void setTargetPosition(int position) {
-//        lift.setTargetPosition(position);
-//        if (atTarget()) {
-//            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            lift.setPower(0);
-//        } else {
-//            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            lift.setPower(1);
-//        }
-//    }
-//
-//    private void tweakTargetPosition(int offset) {
-//        setTargetPosition(getTargetPosition()+offset);
-//    }
-//    public void tweakTargetPositionUp() {
-//        tweakTargetPosition(-10);
-//    }
-//    public void tweakTargetPositionDown() {
-//        tweakTargetPosition(10);
-//    }
-
+    public void liftUp() {
+        liftPower = .4;
+    }
+    public void liftDown() {
+        liftPower = -.4;
+    }
+    public void setLiftPower() {
+        lift.setPower(liftPower);
+        liftPower = 0;
+    }
 
     // Intake in/out
 
@@ -87,8 +61,8 @@ public class Intake extends Component {
 
     public void addData(Telemetry telemetry) {
         telemetry.addData("Intake Component",
-                "intakePower: (%f)",
-                intakePower);
+                "intakePower: (%f), liftPower: (%f)",
+                intakePower, liftPower);
     }
 
 }

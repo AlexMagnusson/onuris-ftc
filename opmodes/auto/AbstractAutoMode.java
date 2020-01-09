@@ -1,7 +1,6 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import org.firstinspires.ftc.teamcode.hardware.components.Vector;
 import org.firstinspires.ftc.teamcode.opmodes.AbstractOpMode;
 
 
@@ -25,7 +24,6 @@ abstract public class AbstractAutoMode extends AbstractOpMode
     double driveX;
     double driveY;
     double rotate;
-    Vector stiltMode;
 
     public double constrainRad(double r) {
         return TWO_PI + (r % TWO_PI);

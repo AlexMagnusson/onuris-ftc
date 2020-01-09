@@ -6,11 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Config;
-import org.firstinspires.ftc.teamcode.hardware.components.Gate;
 import org.firstinspires.ftc.teamcode.hardware.components.Gyro;
 import org.firstinspires.ftc.teamcode.hardware.components.Intake;
-import org.firstinspires.ftc.teamcode.hardware.components.Stacker;
-import org.firstinspires.ftc.teamcode.hardware.components.Stilt;
 import org.firstinspires.ftc.teamcode.hardware.components.SwerveDrive;
 import org.firstinspires.ftc.teamcode.hardware.components.WheelDrive;
 
