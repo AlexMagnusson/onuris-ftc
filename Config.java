@@ -2,19 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 public class Config {
 
-    // Stacker Component
-    public final static String STACKER = "stacker";
-
     // Intake Component
     public final static String INTAKE_LEFT = "intake_left";
     public final static String INTAKE_RIGHT = "intake_right";
-    public final static String INTAKE_LIFT = "intake_lift";  // has encoder on it
-
-    // Stilt Component
-    public final static String LEFT_STILT = "left_stilt";
-    public final static String LEFT_STILT_ENCODER = "intake_left";
-    public final static String RIGHT_STILT = "right_stilt";
-    public final static String RIGHT_STILT_ENCODER = "intake_right";
+    public final static String INTAKE_LIFT = "intake_lift";
 
     // Swerve Drive Components
 
@@ -35,15 +26,6 @@ public class Config {
     public final static String FRONT_SD3 = "front_sd3";
     public final static String FRONT_SD_SERVO_ENCODER = "front_sd1";
     public final static String FRONT_SD_MOTOR_ENCODER = "front_sd2";
-
-    // Gate
-
-    public final static String GATE_SERVO = "gate";
-
-
-    // Other
-
-
 
 }
 

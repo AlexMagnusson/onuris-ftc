@@ -25,17 +25,8 @@ public class Robot {
     // Swerve Drives
     public SwerveDrive swerveDrive;
 
-    // Stacker
-    public Stacker stacker;
-
     // Intake
     public Intake intake;
-
-    // Stilts
-    public Stilt stilt;
-
-    // Gate
-    public Gate gate;
 
     public Robot(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -43,21 +34,10 @@ public class Robot {
         // Retrieve gyro
         gyro = new Gyro(hardwareMap.get(BNO055IMU.class, "imu"));
 
-        // Initialize gate
-        gate = new Gate(crServo(Config.GATE_SERVO));
-
-        // Initialize Stacker Motor
-        stacker = new Stacker(dcMotor(Config.STACKER));
-
         // Three Intake Motors
         intake = new Intake(
                 dcMotor(Config.INTAKE_LEFT), dcMotor(Config.INTAKE_RIGHT),
-                dcMotor(Config.INTAKE_LIFT));
-
-        // Two Stilt Servos
-        stilt = new Stilt(
-                crServo(Config.LEFT_STILT), dcMotor(Config.LEFT_STILT_ENCODER),
-                crServo(Config.RIGHT_STILT), dcMotor(Config.RIGHT_STILT_ENCODER));
+                crServo(Config.INTAKE_LIFT));
 
         // Initialize Swerve Drives
 
