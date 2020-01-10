@@ -41,11 +41,13 @@ public class SwerveDrive extends Component {
         left.drive(left_speed, left_angle);
     }
 
+    // Robot-centric (drive without gyro)
     public void drive(double driveX, double driveY, double rotateX) {
         driveY *= -1;
         doDrive(driveX, driveY, rotateX);
     }
 
+    // Field-centric (drive with gyro)
     public void drive(double driveX, double driveY, double rotateX, double heading) {
         driveY *= -1;
 
@@ -58,10 +60,10 @@ public class SwerveDrive extends Component {
 
     public void addData(Telemetry telemetry) {
         telemetry.addData("Right Swerve Drive",
-                "RIGHT: %s",
+                "%s",
                 right.toString());
         telemetry.addData("Left Swerve Drive",
-                "LEFT: %s",
+                "%s",
                 left.toString());
     }
 

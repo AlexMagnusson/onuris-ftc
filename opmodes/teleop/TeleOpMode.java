@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.opmodes.AbstractOpMode;
 
 
-@TeleOp(name="Julian's Second Op Mode", group="Iterative Opmode")
+@TeleOp(name="Julian's TeleOp Mode", group="Iterative Opmode")
 public class TeleOpMode extends AbstractOpMode
 {
     boolean useGyro = false;
@@ -16,9 +16,9 @@ public class TeleOpMode extends AbstractOpMode
         super.loop();
 
         if (gamepad2.b)
-            useGyro = true;
+            useGyro = true;  // field-centric
         if (gamepad2.x)
-            useGyro = false;
+            useGyro = false;  // robot-centric
         if (gamepad2.y)
             robot.gyro.resetHeading();
 
@@ -47,11 +47,11 @@ public class TeleOpMode extends AbstractOpMode
             else if (intakeOut)
                 robot.intake.setIntakeOut();
 
+            robot.intake.setLiftOff();
             if (intakeUp)
-                robot.intake.liftUp();
+                robot.intake.setLiftUp();
             if (intakeDown)
-                robot.intake.liftDown();
-            robot.intake.setLiftPower();
+                robot.intake.setLiftDown();
 
             robot.intake.addData(telemetry);
         }

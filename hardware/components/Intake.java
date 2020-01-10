@@ -28,15 +28,18 @@ public class Intake extends Component {
 
     // Lift
 
-    public void liftUp() {
-        liftPower = .4;
-    }
-    public void liftDown() {
-        liftPower = -.4;
-    }
-    public void setLiftPower() {
+    public void setLiftPower(double power) {
+        liftPower = power;
         lift.setPower(liftPower);
-        liftPower = 0;
+    }
+    public void setLiftOff() {
+        setLiftPower(0);
+    }
+    public void setLiftUp() {
+        setLiftPower(.4);
+    }
+    public void setLiftDown() {
+        setLiftPower(-.4);
     }
 
     // Intake in/out

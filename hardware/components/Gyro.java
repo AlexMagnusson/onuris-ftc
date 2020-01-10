@@ -63,7 +63,9 @@ public class Gyro extends Component {
 
     // Telemetry
     public void addData(Telemetry telemetry) {
-        telemetry.addData("Gyro", "heading: (%f)", getHeading());
+        telemetry.addData(
+                "Gyro", "heading: (%f); angles: (%f), (%f), (%f)",
+                getHeading(), angles.firstAngle, angles.secondAngle, angles.thirdAngle);
     }
 
 }
