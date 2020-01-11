@@ -36,10 +36,10 @@ public class Intake extends Component {
         setLiftPower(0);
     }
     public void setLiftUp() {
-        setLiftPower(.4);
+        setLiftPower(-.4);
     }
     public void setLiftDown() {
-        setLiftPower(-.4);
+        setLiftPower(.4);
     }
 
     // Intake in/out
@@ -53,10 +53,10 @@ public class Intake extends Component {
         setIntakePower(0);
     }
     public void setIntakeIn() {
-        setIntakePower(-1);
+        setIntakePower(1);
     }
     public void setIntakeOut() {
-        setIntakePower(1);
+        setIntakePower(-1);
     }
 
 

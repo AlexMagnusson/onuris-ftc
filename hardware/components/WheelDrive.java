@@ -122,7 +122,7 @@ public class WheelDrive extends Component {
         if (motorDirection == 1) drc = "forward";
         else if (motorDirection == -1) drc = "reverse";
         return String.format(
-                "currentRotation: (%f), direction: (%s), servoPower: (%.2f), drivePower: (%.2f)",
+                "currentRotation: (%f), motorDirection: (%s), servoPower: (%.2f), drivePower: (%.2f)",
                 currentRotation(), drc, servo.getPower(), drivePower
         );
     }

@@ -60,9 +60,10 @@ public class TeleOpMode extends AbstractOpMode
 
         if (robot.swerveDrive != null) {
             if (useGyro)
-                robot.swerveDrive.drive(driveStick_X, driveStick_Y, rotateStick_X, robot.gyro.getAdjustedHeading());
+                robot.swerveDrive.control(driveStick_X, driveStick_Y, rotateStick_X, robot.gyro.getAdjustedHeading());
             else
-                robot.swerveDrive.drive(driveStick_X, driveStick_Y, rotateStick_X);
+                robot.swerveDrive.control(driveStick_X, driveStick_Y, rotateStick_X);
+            robot.swerveDrive.drive();
             robot.swerveDrive.addData(telemetry);
         }
 
