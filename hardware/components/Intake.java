@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class Intake extends Component {
+public class Intake {
 
     // Hardware devices
     DcMotor left;  // Left intake motor

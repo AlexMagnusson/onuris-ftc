@@ -14,8 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 abstract public class AbstractOpMode extends OpMode {
 
-    private ElapsedTime runtime = new ElapsedTime();
-
     // Hardware
     public Robot robot;
 
@@ -41,7 +39,7 @@ abstract public class AbstractOpMode extends OpMode {
      * Code to run ONCE when the driver hits PLAY
      */
     @Override
-    public void start() { runtime.reset(); }
+    public void start() { }
 
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP

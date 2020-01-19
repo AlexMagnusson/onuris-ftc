@@ -2,27 +2,24 @@ package org.firstinspires.ftc.teamcode.hardware.components;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class SwerveDrive extends Component {
+public class SwerveDrive {
 
-    private static double RAMP_UP_FACTOR1 = 0.25;  // Percentage of error adjusted for speed
-    private static double RAMP_DOWN_FACTOR1 = 0.5;  // Percentage of error adjusted for speed
+    private static double RAMP_UP_FACTOR = 0.25;  // Percentage of error adjusted for speed
+    private static double RAMP_DOWN_FACTOR = 0.5;  // Percentage of error adjusted for speed
 
-    private static double RAMP_UP_FACTOR2 = 0.5;  // Percentage of error adjusted for rotation
-    private static double RAMP_DOWN_FACTOR2 = 0.8;  // Percentage of error adjusted for rotation
-
+    // Wheel components
     public WheelDrive left;
     public WheelDrive right;
     public WheelDrive front;
 
     // Controller inputs
-    private double joystickX = 0;
-    private double joystickY = 0;
-    private double rotateTarget = 0;
+    public double joystickX = 0;
+    public double joystickY = 0;
 
     // Actual controls after calculations
     private double driveX = 0;
     private double driveY = 0;
-    private double rotate = 0;
+    public double rotate = 0;
 
     public SwerveDrive(WheelDrive right, WheelDrive left, WheelDrive front) {
         this.right = right;
@@ -41,55 +38,63 @@ public class SwerveDrive extends Component {
         return arr;
     }
 
-    public double calcRampUp(double target, double current, double upFactor, double downFactor) {
-        double rampUp;
+    private double calcRampUp(double target, double current, double upFactor, double downFactor) {
         double error = target-current;
-        if (Math.abs(target) < Math.abs(current))
-            rampUp = downFactor*error;
-        else
-            rampUp = upFactor*error;
-        return rampUp;
+        double factor = (Math.abs(target) < Math.abs(current))? downFactor : upFactor;
+        return error*factor;
     }
 
     public void drive() {
-        driveX += calcRampUp(joystickX, driveX, RAMP_UP_FACTOR1, RAMP_DOWN_FACTOR1);
-        driveY += calcRampUp(joystickY, driveY, RAMP_UP_FACTOR1, RAMP_DOWN_FACTOR1);
-        rotate += calcRampUp(rotateTarget, rotate, RAMP_UP_FACTOR2, RAMP_DOWN_FACTOR2);
+        driveX += calcRampUp(joystickX, driveX, RAMP_UP_FACTOR, RAMP_DOWN_FACTOR);
+        driveY += calcRampUp(joystickY, driveY, RAMP_UP_FACTOR, RAMP_DOWN_FACTOR);
 
         // -1 (left) <= driveX <= 1 (right)
         // -1 (backward) <= driveY <= 1 (forward)
         // -1 (turn left) <= rotateX <= 1 (turn right)
 
-        double[] frontXY = {0, -3.75};
-        double[] leftXY = {-3.75, 3.75};
-        double[] rightXY = {3.75, 3.75};
+        double[] frontXY = {0, -1};
+        double[] leftXY = {-1, 1};
+        double[] rightXY = {1, 1};
 
         double[] frontArr = calcSwerve(frontXY[0], frontXY[1]);
         double[] leftArr = calcSwerve(leftXY[0], leftXY[1]);
         double[] rightArr = calcSwerve(rightXY[0], rightXY[1]);
 
-        right.drive(rightArr[0], rightArr[1]);
-        left.drive(leftArr[0], leftArr[1]);
-        front.drive(frontArr[0], frontArr[1]);
+        right.control(rightArr[0], rightArr[1]);
+        left.control(leftArr[0], leftArr[1]);
+        front.control(frontArr[0], frontArr[1]);
+
+        right.drive();
+        left.drive();
+        front.drive();
     }
 
     // Robot-centric (drive without gyro)
     public void control(double x, double y, double rX) {
-        rotateTarget = rX/2;
+        rotate = rX*0.5;
         joystickX = x;
         joystickY = -y;
     }
 
     // Field-centric (drive with gyro)
     public void control(double x, double y, double rX, double heading) {
-        rotateTarget = rX/2;
-        joystickX = x;
-        joystickY = -y;
+        control(x, y, rX);
+        adjustByGyro(heading);
+    }
 
+    public void adjustByGyro(double heading) {
         double temp = joystickY*Math.cos(heading) + joystickX*Math.sin(heading);
         joystickX = -joystickY*Math.sin(heading) + joystickX*Math.cos(heading);
         joystickY = temp;
     }
+
+
+    public double currentDistanceMoved() {
+        return (left.encoderMotor.currentDistanceMoved() +
+                right.encoderMotor.currentDistanceMoved() +
+                front.encoderMotor.currentDistanceMoved())/3;
+    }
+
 
     public void addData(Telemetry telemetry) {
         telemetry.addData("Right Swerve Drive",

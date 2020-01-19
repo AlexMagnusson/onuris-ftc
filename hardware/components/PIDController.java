@@ -25,7 +25,7 @@ public class PIDController
      * Allocate a PID object with the given constants for P, I, D
      * @param Kp the proportional coefficient
      * @param Ki the integral coefficient
-     * @param Kd the derivative coefficient 
+     * @param Kd the derivative coefficient
      */
     public PIDController(double Kp, double Ki, double Kd)
     {

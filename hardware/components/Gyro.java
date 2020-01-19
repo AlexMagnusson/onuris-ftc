@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class Gyro extends Component {
+public class Gyro {
 
     // The IMU sensor object
     private BNO055IMU imu;
