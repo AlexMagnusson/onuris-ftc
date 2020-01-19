@@ -21,10 +21,6 @@ public class AutoMode1 extends AbstractAutoMode
         robot.swerveDrive.adjustByGyro(robot.gyro.getAdjustedHeading());
     }
 
-    private void drive() {
-        robot.swerveDrive.drive();
-    }
-
     @Override
     public void loop() {
         super.loop();
@@ -32,46 +28,44 @@ public class AutoMode1 extends AbstractAutoMode
         setDefaults();
 
         if (waiting) {
-            if (getTimeElapsed() >= 4) {
+            if (timeSpentWaiting() >= 4) {
                 stopWaiting();
             }
         } else {
-            if (stage == 1) {
+            if (stage == 1) {  // Move north to grab foundation
                 robot.swerveDrive.joystickY = 0.5;
                 adjustByGyro();
 
                 if (getCurrentDistanceMoved() >= 1000)
                     nextStage();
 
-            } else if (stage == 2) {
+            } else if (stage == 2) {  // Move south, pulling foundation
                 robot.swerveDrive.joystickY = -0.5;
                 adjustByGyro();
 
                 if (getCurrentDistanceMoved() >= 500)
                     nextStage();
 
-            } else if (stage == 3) {
-                // TODO: set swerve drive target angle instead of amount of rotation
-                robot.swerveDrive.rotate = 0.2;
-                adjustByGyro();
+            } else if (stage == 3) {  // Turn right 90 degrees with foundation
+                robot.swerveDrive.setRotateByTarget(robot.gyro.getAdjustedHeading(), -Math.PI/2);
 
                 if (getTimeElapsed() >= 0.2)
                     nextStage();
 
-            } else if (stage == 4) {
+            } else if (stage == 4) {  // Move east?, pushing foundation
                 robot.swerveDrive.joystickX = -1;
                 adjustByGyro();
 
                 if (getCurrentDistanceMoved() >= 500)
                     nextStage();
 
-            } else if (stage == 5) {
+            } else if (stage == 5) {  // Unlatch from foundation
                 robot.intake.setLiftUp();
                 if (getTimeElapsed() >= 2)
                     nextStage();
             }
         }
-        drive();
+        robot.swerveDrive.drive();
 
         telemetry.addData("AUTONOMOUS", "stage: (%s), waiting: (%s)", stage, waiting);
 

@@ -7,29 +7,16 @@ abstract public class AbstractAutoMode extends AbstractOpMode
     protected int stage = 1;
     protected boolean waiting = false;
 
-    public void resetInitials() {
-        initialDistanceMoved = robot.swerveDrive.currentDistanceMoved();
-        initialTimeElapsed = getRuntime();
-    }
+    // Time elapsed in seconds when started waiting
+    private double waitingStartTime = 0;
 
-    public void nextStage() {
-        stage += 1;
-        startWaiting();
-    }
-
-    public void startWaiting() {
-        resetInitials();
-        waiting = true;
-    }
-    public void stopWaiting() {
-        waiting = false;
-        resetInitials();
-    }
-
-    // Distance moved since current stage started
+    // Distance moved when the current stage started
     private double initialDistanceMoved = 0;
-    // Time elapsed in seconds since current stage started
-    private double initialTimeElapsed = 0;
+    // Time elapsed in seconds when the current stage started
+    private double startTime = 0;
+
+
+    // -------------------- GETTER METHODS --------------------
 
     public double getCurrentDistanceMoved() {
         return Math.abs(robot.swerveDrive.currentDistanceMoved() - initialDistanceMoved);
@@ -37,7 +24,31 @@ abstract public class AbstractAutoMode extends AbstractOpMode
 
     public double getTimeElapsed() {
         // in seconds
-        return getRuntime() - initialTimeElapsed;
+        return getRuntime() - startTime;
+    }
+
+    public double timeSpentWaiting() {
+        return getRuntime() - waitingStartTime;
+    }
+
+
+    // -------------------- FUNCTIONS --------------------
+
+    public void nextStage() {
+        stage += 1;
+
+        initialDistanceMoved = robot.swerveDrive.currentDistanceMoved();
+        startTime = getRuntime();
+
+        startWaiting();
+    }
+
+    public void startWaiting() {
+        waitingStartTime = getRuntime();
+        waiting = true;
+    }
+    public void stopWaiting() {
+        waiting = false;
     }
 
 

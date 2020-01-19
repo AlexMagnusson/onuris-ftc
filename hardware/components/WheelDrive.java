@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class WheelDrive {
 
-    private static final double TWO_PI = 2.0*Math.PI;
-
     // The orientation at which it's OK to drive the module.
     private static final double DRIVING_OK_THRESHOLD = Math.PI/4;
 
@@ -44,18 +42,6 @@ public class WheelDrive {
                 8192);
     }
 
-    // -------------------- ANGLE FUNCTIONS --------------------
-
-    // Constrains radians to an angle from 0 to TWO_PI
-    private double constrainAngle(double a) {
-        return a % TWO_PI;
-    }
-    // Add 180 degrees (pi radians) to an angle
-    private double flipAngle(double a) {
-        return constrainAngle(a + Math.PI);
-    }
-
-
     // -------------------- MOTOR FUNCTIONS --------------------
 
     private void reverseMotorDirection() {
@@ -78,20 +64,7 @@ public class WheelDrive {
         if (motorDirection == 1) {
             return angle;
         } else {
-            return flipAngle(angle);
-        }
-    }
-
-    /**
-     * The amount of rotation, in radians (-PI to PI), needed to reach a target angle from the current angle
-     */
-    private double calculateTurn(double current, double target) {
-        double ccw = constrainAngle(target - current);  // turn needed if you go counterclockwise
-        double cw = TWO_PI - ccw;  // turn needed if you go clockwise
-        if (ccw < cw) {
-            return ccw;
-        } else {
-            return -cw;
+            return Angle.flip(angle);
         }
     }
 
@@ -105,10 +78,10 @@ public class WheelDrive {
 
 
         double currentAngle = currentAngle();
-        double aboutFaceAngle = flipAngle(currentAngle);
+        double aboutFaceAngle = Angle.flip(currentAngle);
 
-        double turnCurrent = calculateTurn(currentAngle, angle);
-        double turnAboutFace = calculateTurn(aboutFaceAngle, angle);
+        double turnCurrent = Angle.calculateTurn(currentAngle, angle);
+        double turnAboutFace = Angle.calculateTurn(aboutFaceAngle, angle);
 
         if (Math.abs(turnAboutFace) < Math.abs(turnCurrent)) {
             reverseMotorDirection();

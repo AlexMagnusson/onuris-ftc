@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware.components;
 
+import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class SwerveDrive {
-
-    private static double RAMP_UP_FACTOR = 0.25;  // Percentage of error adjusted for speed
-    private static double RAMP_DOWN_FACTOR = 0.5;  // Percentage of error adjusted for speed
 
     // Wheel components
     public WheelDrive left;
@@ -27,6 +26,7 @@ public class SwerveDrive {
         this.front = front;
     }
 
+
     private double[] calcSwerve(double wheelX, double wheelY) {
         double Wx = driveX+rotate*wheelY;
         double Wy = driveY-rotate*wheelX;
@@ -38,15 +38,9 @@ public class SwerveDrive {
         return arr;
     }
 
-    private double calcRampUp(double target, double current, double upFactor, double downFactor) {
-        double error = target-current;
-        double factor = (Math.abs(target) < Math.abs(current))? downFactor : upFactor;
-        return error*factor;
-    }
-
     public void drive() {
-        driveX += calcRampUp(joystickX, driveX, RAMP_UP_FACTOR, RAMP_DOWN_FACTOR);
-        driveY += calcRampUp(joystickY, driveY, RAMP_UP_FACTOR, RAMP_DOWN_FACTOR);
+        driveX = joystickX;
+        driveY = joystickY;
 
         // -1 (left) <= driveX <= 1 (right)
         // -1 (backward) <= driveY <= 1 (forward)
@@ -69,6 +63,7 @@ public class SwerveDrive {
         front.drive();
     }
 
+
     // Robot-centric (drive without gyro)
     public void control(double x, double y, double rX) {
         rotate = rX*0.5;
@@ -86,6 +81,11 @@ public class SwerveDrive {
         double temp = joystickY*Math.cos(heading) + joystickX*Math.sin(heading);
         joystickX = -joystickY*Math.sin(heading) + joystickX*Math.cos(heading);
         joystickY = temp;
+    }
+
+    public void setRotateByTarget(double heading, double target) {
+        rotate = -Angle.calculateTurn(heading, target);
+        rotate = Range.clip(rotate, -1, 1);
     }
 
 

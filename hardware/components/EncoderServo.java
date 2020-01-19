@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.util.Range;
 public class EncoderServo {
     // For Continuous Rotation servos using an external encoder connected to a motor
 
-    private static final double TWO_PI = 2.0*Math.PI;
-
     // Hardware devices
     private CRServo servo;
     private DcMotor encoder;
@@ -35,28 +33,20 @@ public class EncoderServo {
 
         errorResponder = servoErrorResponse;
         errorResponder.setContinuous();
-        errorResponder.setInputRange(0, TWO_PI);
+        errorResponder.setInputRange(0, Angle.TWO_PI);
         errorResponder.setTolerance(0.01);
 
         ENCODER_TICKS_PER_REVOLUTION = encoderTicksPerRevolution;
     }
 
-    // -------------------- ANGLE FUNCTIONS --------------------
-
-    // Constrains radians to an angle from 0 to TWO_PI
-    private double constrainAngle(double a) {
-        return a % TWO_PI;
-    }
-
-
     // -------------------- GETTER METHODS --------------------
 
     // Distance moved, in radians
     public double currentRadiansMoved() {
-        return ((double)encoder.getCurrentPosition() / ENCODER_TICKS_PER_REVOLUTION) * TWO_PI;
+        return ((double)encoder.getCurrentPosition() / ENCODER_TICKS_PER_REVOLUTION) * Angle.TWO_PI;
     }
     public double currentAngle() {
-        return constrainAngle(currentRadiansMoved());
+        return Angle.constrain(currentRadiansMoved());
     }
 
     public boolean onTargetBy(double threshold) {
